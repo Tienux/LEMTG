@@ -1,46 +1,22 @@
 import React from 'react';
-
+import './style/NavBar.css'
 
 const NavBar = () => {
-    return (
-      <nav style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        padding: '10px 20px', 
-        borderBottom: '1px solid #ccc' 
-      }}>
-        <h1 style={{ margin: 0 }}>Logo</h1> {/* Remplace "Logo" par le nom ou logo de ton choix */}
+  return (
+    <nav className="navbar">
+      <h1>Logo</h1>
   
-        <div style={{ display: 'flex', gap: '15px' }}>
-          <button 
-            style={{ 
-              padding: '10px 15px', 
-              border: 'none', 
-              borderRadius: '4px', 
-              backgroundColor: '#007bff', 
-              color: 'white', 
-              cursor: 'pointer' 
-            }}
-          >
-            Connexion
-          </button>
-          <button 
-            style={{ 
-              padding: '10px 15px', 
-              border: 'none', 
-              borderRadius: '4px', 
-              backgroundColor: '#28a745', 
-              color: 'white', 
-              cursor: 'pointer' 
-            }}
-          >
-            Panier
-          </button>
-        </div>
-      </nav>
-    );
-  }
+      <div className="navbar-buttons">
+        <button className="navbar-button connexion">
+          Connexion
+        </button>
+        <button className="navbar-button panier">
+          Panier
+        </button>
+      </div>
+    </nav>
+  );
+}
   
   export default NavBar;
   

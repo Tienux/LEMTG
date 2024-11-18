@@ -1,0 +1,36 @@
+/* NavBar.css */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .navbar h1 {
+    margin: 0;
+  }
+  
+  .navbar-buttons {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .navbar-button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .navbar-button.connexion {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .navbar-button.panier {
+    background-color: #28a745;
+    color: white;
+  }
+  
