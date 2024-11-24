@@ -1,10 +1,11 @@
 import React from 'react';
 import './style/NavBar.css'
+import Logo from './Logo';
 
 const NavBar = () => {
   return (
     <nav className="navbar">
-      <h1>Logo</h1>
+      <Logo  size={"100"}/>
   
       <div className="navbar-buttons">
         <button className="navbar-button connexion">

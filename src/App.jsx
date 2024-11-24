@@ -1,4 +1,3 @@
-import './data.json';
 import NavBar from './Navbar';
 import Product from './Product';
 import './style/App.css';

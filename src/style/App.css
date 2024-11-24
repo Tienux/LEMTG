@@ -1,3 +1,91 @@
+/* Importer une police de caractères élégante */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif; /* Utiliser la police Roboto */
+    background-color: #f4f4f9; /* Couleur de fond douce */
+    color: #333; /* Couleur du texte */
+    margin: 0; /* Supprimer les marges par défaut */
+    padding: 0; /* Supprimer les espacements par défaut */
+    line-height: 1.6; /* Hauteur de ligne pour une meilleure lisibilité */
+}
+
 .container {
     margin-top: 40px; 
+    padding: 20px; /* Ajouter un espacement interne */
+    max-width: 1200px; /* Limiter la largeur maximale */
+    margin-left: auto; /* Centrer horizontalement */
+    margin-right: auto; /* Centrer horizontalement */
+    background-color: #ffffff; /* Fond blanc pour le conteneur */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Ombre légère */
+    border-radius: 8px; /* Coins arrondis */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #333; /* Couleur des titres */
+    margin-top: 0; /* Supprimer la marge supérieure */
+    font-weight: 500; /* Poids de police moyen */
+}
+
+p {
+    color: #666; /* Couleur des paragraphes */
+    margin: 16px 0; /* Marge verticale */
+}
+
+a {
+    color: #e91e63; /* Couleur des liens */
+    text-decoration: none; /* Supprimer la décoration des liens */
+    transition: color 0.3s; /* Transition pour l'effet de survol */
+}
+
+a:hover {
+    color: #c2185b; /* Couleur des liens au survol */
+}
+
+button {
+    background-color: #e91e63; /* Couleur de fond des boutons */
+    color: #ffffff; /* Couleur du texte des boutons */
+    border: none; /* Supprimer la bordure */
+    padding: 10px 20px; /* Espacement interne */
+    border-radius: 4px; /* Coins arrondis */
+    cursor: pointer; /* Curseur pointeur */
+    transition: background-color 0.3s; /* Transition pour l'effet de survol */
+}
+
+button:hover {
+    background-color: #c2185b; /* Couleur de fond des boutons au survol */
+}
+
+button:focus {
+    outline: none; /* Supprimer le contour de focus */
+}
+
+input, textarea {
+    width: 100%; /* Largeur complète */
+    padding: 10px; /* Espacement interne */
+    margin: 8px 0; /* Marge verticale */
+    border: 1px solid #ddd; /* Bordure légère */
+    border-radius: 4px; /* Coins arrondis */
+    box-sizing: border-box; /* Inclure la bordure et le padding dans la largeur */
+}
+
+input:focus, textarea:focus {
+    border-color: #e91e63; /* Couleur de bordure au focus */
+    outline: none; /* Supprimer le contour de focus */
+}
+
+header {
+    background-color: #e91e63; /* Couleur de fond de l'en-tête */
+    color: #ffffff; /* Couleur du texte de l'en-tête */
+    padding: 20px 0; /* Espacement interne */
+    text-align: center; /* Centrer le texte */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Ombre légère */
+}
+
+footer {
+    background-color: #333; /* Couleur de fond du pied de page */
+    color: #ffffff; /* Couleur du texte du pied de page */
+    padding: 20px 0; /* Espacement interne */
+    text-align: center; /* Centrer le texte */
+    margin-top: 40px; /* Marge supérieure */
 }
