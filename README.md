@@ -1,6 +1,15 @@
 
 # 🚀 **Projet Etienne, Luc, Mathis, Gabriel, Thomas** 🎉
 
+<p align="center">
+  <a href="http://vite.com/" target="blank">
+    <img src="https://vitejs.dev/logo.svg" width="120" alt="Vite Logo" />
+  </a>
+ 
+
+</p>
+
+
 ## 📥 **Commandes à exécuter :**
 
 1. Clonez le projet depuis GitHub :
