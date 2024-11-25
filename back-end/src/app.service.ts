@@ -19,7 +19,7 @@ export class AppService {
   }
 
   async getAllProducts(): Promise<any> {
-    const query = 'SELECT * FROM products';
+    const query = 'SELECT * FROM products limit 50';
     const result = await this.client.execute(query);
     return result.rows;
   }
