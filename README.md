@@ -17,7 +17,7 @@
 $ git clone git@github.com:Tienux/LEMTG.git
 ```
 
-2. Installez les dépendances via npm :
+2. Installez les dépendances via npm dans le répo normal et dans le dossier back-end:
 ```bash
 $ npm install 
 ```
@@ -25,8 +25,19 @@ ou
 ```bash
 yarn install
 ```
+3. Lancez docker-desktop puis executer le script setup.sh présent dans back-end cassandra-setup
 
-3. Lancez le serveur de développement :
+
+4. Lancez le serveur dans le dossier back-end :
+```bash
+$ npm run start
+```
+ou 
+```bash
+yarn dev
+```
+
+5. Lancez le serveur de développement :
 ```bash
 $ npm run dev
 ```
@@ -34,6 +45,9 @@ ou
 ```bash
 yarn dev
 ```
+
+     
+
      
 
 ---
