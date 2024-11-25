@@ -24,9 +24,16 @@
 ## Pré-requis
 
 - [Node.js](https://nodejs.org/en/download/) > 18.x
-- [Cassandra](https://cassandra.apache.org/download/) > 3.x
 - [NestJS](https://docs.nestjs.com/) > 8.x
 - [TypeScript](https://www.typescriptlang.org/) > 4.x
+- [Docker](https://docs.docker.com/get-docker/) > 20.x
+- [Cassandra](https://cassandra.apache.org/) > 4.x
+## Launch a Cassandra DB on Docker
+First, you need to take your script.sql file in the same directory as your docker-compose.yml file and the setup.sh script. Then, you can run the following command to launch a Cassandra DB on Docker:
+```bash
+$ ./setup.sh
+```
+
 ## Description
 
 NestJS framework TypeScript starter repository for an API that interacts with a Cassandra database. This project uses **Node.js** and **TailwindCSS** for modern, scalable, and responsive design.
