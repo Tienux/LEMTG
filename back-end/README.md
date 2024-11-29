@@ -28,15 +28,37 @@
 - [TypeScript](https://www.typescriptlang.org/) > 4.x
 - [Docker](https://docs.docker.com/get-docker/) > 20.x
 - [Cassandra](https://cassandra.apache.org/) > 4.x
+
 ## Launch a Cassandra DB on Docker
-First, you need to take your script.sql file in the same directory as your docker-compose.yml file and the setup.sh script. Then, you can run the following command to launch a Cassandra DB on Docker:
-```bash
-$ ./setup.sh
+#### First, you need to take your ``init.cql`` file in the same directory as your ``docker-compose.yml`` file and the ``Dockerfile``. Then, you can run the following command to launch a Cassandra DB on Docker:
+
+First, go to the back-end directory:
+```bash	
+$ cd back-end
+```	
+Next, go to the cassandra-setup directory:
+```bash	
+$ cd cassandra-setup
 ```
+After that, run the following command:
 
-## Description
+```bash
+$ docker compose up -d
+```
+#### When cassandra is up and data is loaded, you can run the following commands to check the data:
 
-NestJS framework TypeScript starter repository for an API that interacts with a Cassandra database. This project uses **Node.js** and **TailwindCSS** for modern, scalable, and responsive design.
+First, run the command below to access the Cassandra container:
+```bash
+$ docker exec -it cassandra cqlsh
+```
+Then, run the following commands to use the keyspace create:
+```bash
+$ USE projet_web;
+```
+Finally, run the following command to check the data:
+```bash
+$ SELECT * FROM users;
+```
 
 ## Project setup
 

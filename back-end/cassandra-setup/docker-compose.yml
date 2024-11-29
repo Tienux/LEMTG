@@ -1,16 +1,14 @@
-version: '3'  #choose version as per your need
+version: '3.8'
 
 services:
   cassandra:
-    image: cassandra:latest
+    build:
+      context: .
+      dockerfile: Dockerfile  # Utilise le Dockerfile pour construire l'image
     container_name: cassandra-container
-    ports:
-      - "9042:9042"
     environment:
-      - CASSANDRA_USER=admin
-      - CASSANDRA_PASSWORD=admin
-    volumes:
-      - cassandra-data:/var/lib/cassandra
-
-volumes:
-  cassandra-data:
+      - CASSANDRA_CLUSTER_NAME=CassandraCluster
+      - CASSANDRA_DC=DC1
+      - CASSANDRA_RACK=Rack1
+    ports:
+      - "9042:9042"  # Port pour CQLSH et clients Cassandra
