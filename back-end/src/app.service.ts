@@ -30,11 +30,6 @@ export class AppService {
     return result.rows;
   }
 
-  async getProductsByCategorie(id:String): Promise<any> {
-    const query = 'SELECT nom_categorie FROM categories WHERE id_categorie = ?';
-    const result = await this.client.execute(query, [id]);
-    return result.rows;
-  }
 
 
 }

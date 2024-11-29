@@ -17,17 +17,49 @@ CREATE TABLE IF NOT EXISTS products (
     idcategorie text
 );
 
+-- Insertion de catégories
 INSERT INTO categories (id, name) 
-VALUES ('1', 'Test1') IF NOT EXISTS;
+VALUES ('1', 'Électroménager') IF NOT EXISTS;
+
+INSERT INTO categories (id, name) 
+VALUES ('2', 'Mobilier') IF NOT EXISTS;
+
+INSERT INTO categories (id, name) 
+VALUES ('3', 'Sport et Loisirs') IF NOT EXISTS;
+
+INSERT INTO categories (id, name) 
+VALUES ('4', 'High-Tech') IF NOT EXISTS;
+
+INSERT INTO categories (id, name) 
+VALUES ('5', 'Jardinage') IF NOT EXISTS;
+
+-- Insertion de produits
+INSERT INTO products (id, date_ajout, description, nom, prix, idcategorie) 
+VALUES ('1', '2021-12-27', 'Réfrigérateur avec capacité de 300L, classe énergétique A++, finition en acier inoxydable.', 'Réfrigérateur LG 300L', '599.00', '1') IF NOT EXISTS;
 
 INSERT INTO products (id, date_ajout, description, nom, prix, idcategorie) 
-VALUES ('ef0e5991-13d8-4cdd-9e01-c740590ba081', 'Dec 27th 21', 'Carrosserie en tôle dacier laqué blanc montée sur roues pour faciliter le déplacement, couvercle laqué blanc, dessus et cuve en métal émaille marron, inaltérable a leau de lessive et a la chaleur,', 'Oriental Congelé Serviettes', '302.00', '1') IF NOT EXISTS;
+VALUES ('2', '2020-06-24', 'Canapé 3 places en tissu gris avec structure en bois massif, coussins déhoussables.', 'Canapé Scandinave', '899.00', '2') IF NOT EXISTS;
 
 INSERT INTO products (id, date_ajout, description, nom, prix, idcategorie) 
-VALUES ('8be56ef1-d6dc-4c00-927e-1c4dedde910c', 'Jun 24th 20', 'Cadre raccord brasé de 53 ou 58 %. Jantes en acier émaillées. Pneus Hiron 700 x 35, garantis 12 mois. Pignon roue libre à emboitement hexagonal. Frein Hirondelle sur jante arrière. Garde-boue métal.', 'Génial Congelé Fromage', '628.00', '1') IF NOT EXISTS;
+VALUES ('3', '2023-02-19', 'Vélo tout terrain (VTT) avec cadre en aluminium, freins à disque et 21 vitesses.', 'VTT Rockrider', '459.00', '3') IF NOT EXISTS;
 
 INSERT INTO products (id, date_ajout, description, nom, prix, idcategorie) 
-VALUES ('abcdd824-c944-4ec4-9a68-dd061107e396', 'Feb 19th 23', 'Bicyclette à 1 vitesse, pneus 1/2 ballon. Cadre de 52cm. Jantes chromées. Roue Hore. Moyeux indéréglables. 2 freins sur jantes. Guidon trials. Garde-boue et couvre chaine en acier émaillé. Porte-bagages. Gardejupes. Pédales à blocs caoutchouc. Émail couleur. Selle route cuir. Sacoche avec outillage. Pompe de cadre. Timbre avertisseur.', 'Artisanal Plastique Chemise', '882.00', '1') IF NOT EXISTS;
+VALUES ('4', '2023-04-05', 'Machine à laver avec capacité de 8 kg, programme rapide 30 minutes, et écran tactile.', 'Lave-linge Samsung EcoBubble', '529.00', '1') IF NOT EXISTS;
 
 INSERT INTO products (id, date_ajout, description, nom, prix, idcategorie) 
-VALUES ('315607b2-eaf4-412d-b0b8-7245b5dcdb03', 'Apr 5th 23', 'Carrosserie en tôle dacier laqué blanc montée sur roues pour faciliter le déplacement, couvercle laqué blanc, dessus et cuve en métal émaille marron, inaltérable a leau de lessive et a la chaleur,', 'Savoureux Caoutchouc Vélo', '62.00', '1') IF NOT EXISTS;
+VALUES ('5', '2022-07-15', 'Télévision 4K UHD de 55 pouces avec technologie HDR10 et système Android TV.', 'TV Sony Bravia 55"', '749.00', '4') IF NOT EXISTS;
+
+INSERT INTO products (id, date_ajout, description, nom, prix, idcategorie) 
+VALUES ('6', '2023-03-11', 'Table à manger en bois de chêne massif, dimensions 200x100 cm, style rustique.', 'Table à manger chêne massif', '1200.00', '2') IF NOT EXISTS;
+
+INSERT INTO products (id, date_ajout, description, nom, prix, idcategorie) 
+VALUES ('7', '2021-10-30', 'Tondeuse électrique avec largeur de coupe de 40 cm, idéale pour les jardins de taille moyenne.', 'Tondeuse Bosch Rotak 40', '299.00', '5') IF NOT EXISTS;
+
+INSERT INTO products (id, date_ajout, description, nom, prix, idcategorie) 
+VALUES ('8', '2023-01-20', 'Ordinateur portable avec écran 15.6 pouces, processeur Intel Core i5, 8 Go RAM, 256 Go SSD.', 'Laptop Lenovo ThinkPad', '799.00', '4') IF NOT EXISTS;
+
+INSERT INTO products (id, date_ajout, description, nom, prix, idcategorie) 
+VALUES ('9', '2023-05-18', 'Ensemble de 2 chaises en velours bleu avec pieds en métal doré, style moderne.', 'Chaises modernes en velours', '250.00', '2') IF NOT EXISTS;
+
+INSERT INTO products (id, date_ajout, description, nom, prix, idcategorie) 
+VALUES ('10', '2022-11-05', 'Barbecue au charbon de bois avec grille en acier inoxydable et roulettes pour faciliter le déplacement.', 'Barbecue Weber Compact', '179.00', '5') IF NOT EXISTS;

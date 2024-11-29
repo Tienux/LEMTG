@@ -22,10 +22,6 @@ export class AppController {
     return this.appService.getAllCategories();
   }
 
-  @Get('api/categorie/:id')
-  async getProductsByCategorie(@Param('id') id: String): Promise<any> {
-    const id_categorie = id.toString();
-    return this.appService.getProductsByCategorie(id_categorie);
-  }
+  
 
 }

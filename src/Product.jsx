@@ -6,34 +6,31 @@ const Product = () => {
     const [data, setData] = React.useState([]);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const [selectedProduct, setSelectedProduct] = React.useState(null);
-    const [categories, setCategories] = React.useState({});
+    const [categories, setCategories] = React.useState([]);
 
     React.useEffect(() => {
+        axios.get('http://localhost:3000/api/categories')
+            .then((response) => {
+                const categories = [];
+                response.data.forEach(category => {
+                    categories[category.id] = category.name;
+                });
+                setCategories(categories);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        
         axios.get('http://localhost:3000/api/products')
             .then((response) => {
                 setData(response.data);
-                response.data.forEach(product => {
-                    fetchCategoryName(product.id_categorie);
-                });
             })
             .catch((error) => {
                 console.error('Error:', error);
             });
     }, []);
 
-    const fetchCategoryName = (id_categorie) => {
-        axios.get(`http://localhost:3000/api/categorie/${id_categorie}`)
-            .then((response) => {
-                setCategories(prevCategories => ({
-                    ...prevCategories,
-                    [id_categorie]: response.data[0].nom_categorie
-                }));
-            })
-            .catch((error) => {
-                console.error('Error fetching category name:', error);
-            });
-    };
-
+    
     const openModal = (product) => {
         setSelectedProduct(product);
         setIsModalOpen(true);
@@ -64,7 +61,7 @@ const Product = () => {
                         <div className="product-details">
                             <p className="product-price">Prix: ${product.prix}</p>
                             <p className="product-description">{product.description}</p>
-                            <p className="product-category">Catégorie: {categories[product.id_categorie]}</p>
+                            <p className="product-category">Catégorie: {categories[product.idcategorie]}</p>
                         </div>
                     </div>
                 ))}
@@ -83,7 +80,7 @@ const Product = () => {
                         </div>
                         <p>{selectedProduct.description}</p>
                         <p><strong>Prix: ${selectedProduct.prix}</strong></p>
-                        <p><strong>Catégorie: {categories[selectedProduct.id_categorie]}</strong></p>
+                        <p><strong>Catégorie: {categories[selectedProduct.idcategorie]}</strong></p>
                     </div>
                 </div>
             )}
