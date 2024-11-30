@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import "./style/Product.css";
+import "../style/Product.css";
 
 const Product = () => {
     const [data, setData] = React.useState([]);

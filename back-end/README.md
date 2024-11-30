@@ -49,15 +49,11 @@ $ docker compose up -d
 
 First, run the command below to access the Cassandra container:
 ```bash
-$ docker exec -it cassandra cqlsh
+$ docker exec -it cassandra-container cqlsh
 ```
 Then, run the following commands to use the keyspace create:
 ```bash
 $ USE projet_web;
-```
-Finally, run the following command to check the data:
-```bash
-$ SELECT * FROM users;
 ```
 
 ## Project setup

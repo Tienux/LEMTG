@@ -1,22 +1,28 @@
-import NavBar from './Navbar';
-import Product from './Product';
+
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+// Importe tes composants/pages
+import HomePage from "./HomePage";
+import Basketball from "./components/Basketball";
+
+
 import './style/App.css';
 
-
-const App = () => {
-  
+function App() {
   return (
-    <>
-      <div >
-        <NavBar />
-        <div className='container'>
-        <Product />
+    <Router>
+      <Routes>
+        {/* Route pour la page d'accueil */}
+        <Route path="/" element={<HomePage />} />
 
-        </div>
-      </div>
-     
-    </>
-  )
+        {/* Route pour la page "À propos" */}
+        <Route path="/basketball" element={<Basketball />} />
+
+        {/* Ajoute d'autres routes ici */}
+      </Routes>
+    </Router>
+  );
 }
 
 export default App
