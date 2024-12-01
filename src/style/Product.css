@@ -1,125 +1,35 @@
-/* Styles de la grille de produits */
 .product-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px; /* Espace entre les éléments */
-  justify-content: center; /* Centrer les éléments */
-  padding: 20px; /* Espacement interne du conteneur */
-  background-color: #f4f4f9; /* Couleur de fond du conteneur */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Trois produits par ligne */
+  gap: 20px;
+  padding: 20px;
 }
 
-/* Style pour chaque carte de produit */
-.product-card {
-  flex: 1 1 calc(33.33% - 16px); /* 33.33% de la largeur moins l'espace entre les éléments */
-  box-sizing: border-box;
-  border: 1px solid #e0e0e0; /* Bordure légère */
-  border-radius: 12px; /* Coins arrondis */
-  padding: 16px; /* Espacement interne */
-  background-color: #ffffff; /* Fond blanc */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Ombre légère */
-  transition: transform 0.3s, box-shadow 0.3s; /* Transition pour l'effet de survol */
-  overflow: hidden; /* Masquer le débordement */
-  display: flex;
-  flex-direction: column; /* Disposer les éléments en colonne */
-  justify-content: space-between; /* Espacer les éléments */
-}
-
-.product-card:hover {
-  transform: translateY(-8px); /* Légère élévation au survol */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Ombre plus prononcée au survol */
-}
-
-.product-card h3 {
-  margin-top: 0; /* Suppression de la marge supérieure */
-  font-size: 1.5em; /* Taille de police */
-  color: #333; /* Couleur du texte */
-  font-family: 'Arial', sans-serif; /* Police de caractères */
-}
-
-.product-card p {
-  margin: 8px 0; /* Marge verticale */
-  color: #666; /* Couleur du texte */
-  font-family: 'Arial', sans-serif; /* Police de caractères */
-}
-
-.product-image {
-  margin-top: 16px; /* Marge supérieure */
-  text-align: center; /* Centrer l'image */
-}
-
-/* Suppression de l'effet hover pour l'image de la grille */
-.product-image img {
-  max-width: 100%; /* Image responsive */
-  height: auto; /* Conserver les proportions */
-  border-radius: 8px; /* Coins arrondis pour l'image */
-  /* Retirer le zoom au survol */
-}
-
-.product-price {
-  font-size: 1.25em; /* Taille de police */
-  color: #e91e63; /* Couleur du prix */
-  font-weight: bold; /* Texte en gras */
-  margin: 16px 0; /* Marge verticale */
-  font-family: 'Arial', sans-serif; /* Police de caractères */
-}
-
-.product-description {
-  flex-grow: 1; /* Prendre tout l'espace disponible */
-  color: #777; /* Couleur du texte */
-  font-family: 'Arial', sans-serif; /* Police de caractères */
-}
-
-/* Styles responsives */
-@media (max-width: 1200px) {
-  .product-card {
-    flex: 1 1 calc(50% - 16px); /* 2 éléments par ligne pour les écrans plus petits */
-  }
-}
-
-@media (max-width: 800px) {
-  .product-card {
-    flex: 1 1 100%; /* 1 élément par ligne pour les écrans encore plus petits */
-  }
-}
-
-/* Styles pour la modal */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Fond sombre */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
 }
 
 .modal-content {
   background-color: white;
   padding: 20px;
-  border-radius: 10px;
-  max-width: 500px;
-  width: 100%;
-  position: relative;
+  border-radius: 8px;
+  width: 400px;
   text-align: center;
+  position: relative;
 }
 
-/* Style pour le bouton de fermeture de la modal */
 .close {
-  font-size: 30px;
-  color: #000;
-  cursor: pointer;
   position: absolute;
   top: 10px;
-  right: 20px;
-}
-
-/* Style pour l'image dans la modal */
-.modal-image img {
-  width: 100%; /* L'image prend toute la largeur disponible */
-  height: auto; /* Conserver les proportions */
-  max-height: 300px; /* Limiter la hauteur de l'image */
-  object-fit: contain; /* Ne pas déformer l'image */
+  right: 10px;
+  font-size: 20px;
+  cursor: pointer;
 }

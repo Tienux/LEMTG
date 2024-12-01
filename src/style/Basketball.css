@@ -1,0 +1,155 @@
+.basket-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.basket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.basket-title {
+    font-size: 24px;
+    color: #333;
+}
+
+.basket-deselect {
+    font-size: 14px;
+    color: #007185;
+    text-decoration: none;
+}
+
+.basket-deselect:hover {
+    text-decoration: underline;
+}
+
+/* Grid for basket items */
+.basket-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Add spacing between products */
+    margin-bottom: 20px;
+}
+
+/* Individual basket item */
+.basket-item {
+    display: flex;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    gap: 20px; /* Spacing between image and details */
+}
+
+.basket-item-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.basket-item-details {
+    flex: 1;
+}
+
+.basket-item-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.basket-item-category {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.basket-item-description {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.basket-item-price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ff4500;
+    margin-bottom: 10px;
+}
+
+/* Quantity Control */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    border: 2px solid #ffd814;
+    border-radius: 20px;
+    padding: 5px 10px;
+    width: fit-content;
+    margin-top: 10px;
+}
+
+.quantity-control button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    color: #111;
+}
+
+.quantity-control button:hover {
+    color: #ff4500;
+}
+
+.quantity-control .quantity {
+    margin: 0 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Summary Section */
+.basket-summary {
+    text-align: right;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    margin-top: 20px;
+}
+
+.basket-total {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.gift-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.checkout-button {
+    background-color: #ffd814;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #111;
+    cursor: pointer;
+    border-radius: 6px;
+    width: 100%;
+}
+
+.checkout-button:hover {
+    background-color: #f7c801;
+}
