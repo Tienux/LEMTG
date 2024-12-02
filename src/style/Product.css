@@ -33,3 +33,58 @@
   font-size: 20px;
   cursor: pointer;
 }
+
+/* Barre de recherche */
+.search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  padding: 0; /* Supprime le padding global */
+  background-color: #f3f3f3;
+  border-radius: 5px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  height: 50px; /* Hauteur fixe pour tous les éléments */
+  width: 90%; /* Largeur augmentée */
+  margin: 20px auto; /* Centrage horizontal */
+  gap: 2px;
+}
+
+.category-select {
+  height: 100%; /* Même hauteur que la barre */
+  padding: 0 15px; /* Ajuste uniquement les côtés */
+  border: 1px solid #ccc;
+  border-right: none; /* Supprime la bordure droite */
+  border-radius: 5px 0 0 5px; /* Coins arrondis uniquement à gauche */
+  background-color: #eaeaea;
+  color: #333;
+  font-size: 16px;
+  display: flex;
+  align-items: center; /* Centre verticalement le contenu */
+}
+
+.search-input {
+  flex-grow: 1; /* Prend tout l'espace disponible */
+  height: 100%; /* Même hauteur que la barre */
+  border: none; /* Supprime toutes les bordures */
+  padding: 0 15px; /* Ajoute un espace interne pour le texte */
+  font-size: 16px; /* Texte plus grand */
+}
+
+.search-button {
+  height: 100%; /* Même hauteur que la barre */
+  padding: 0 20px; /* Ajuste les côtés */
+  border: none; /* Supprime toutes les bordures */
+  background-color: #ffa41c; /* Couleur orange */
+  color: white;
+  border-radius: 0 5px 5px 0; /* Coins arrondis uniquement à droite */
+  font-size: 18px; /* Taille de l'icône ou texte plus grand */
+  cursor: pointer;
+  display: flex;
+  align-items: center; /* Centre verticalement l'icône */
+  justify-content: center; /* Centre horizontalement l'icône */
+}
+
+.search-button:hover {
+  background-color: #e38b00; /* Couleur orange plus foncée */
+}

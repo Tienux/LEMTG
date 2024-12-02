@@ -1,0 +1,88 @@
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it appears above other content */
+}
+
+/* Modal Content */
+.modal-content {
+  background: #fff; /* White background for the modal */
+  border-radius: 8px; /* Rounded corners */
+  width: 90%; /* Make it responsive */
+  max-width: 400px; /* Max width for larger screens */
+  padding: 20px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Modal Title */
+.modal-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #333; /* Dark text color */
+}
+
+/* Modal Text */
+.modal-content p {
+  font-size: 1rem;
+  color: #555; /* Subtle text color */
+  margin-bottom: 20px;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px; /* Spacing between buttons */
+}
+
+/* Cancel Button */
+.cancel-button {
+  background: #e0e0e0; /* Light grey background */
+  color: #333;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.cancel-button:hover {
+  background: #d6d6d6; /* Darker grey on hover */
+}
+
+/* Confirm Button */
+.confirm-button {
+  background: #d9534f; /* Bootstrap danger red */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.confirm-button:hover {
+  background: #c9302c; /* Darker red on hover */
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
