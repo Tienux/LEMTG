@@ -12,3 +12,24 @@ services:
       - CASSANDRA_RACK=Rack1
     ports:
       - "9042:9042"  # Port pour CQLSH et clients Cassandra
+    networks:
+      - app_network
+
+  redis:
+    image: redis:latest  # Utilise l'image officielle Redis
+    container_name: redis-container
+    ports:
+      - "6379:6379"  # Port standard pour Redis
+    networks:
+      - app_network
+    volumes:
+      - redis-data:/data  # Persiste les données Redis
+    command: ["redis-server"]
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local
