@@ -8,6 +8,8 @@ import Basketball from "./components/Basketball";
 
 
 import './style/App.css';
+import PaymentSuccess from "./components/PayementSuccess";
+import OrderSummary from "./components/SummaryOrder";
 
 function App() {
   return (
@@ -18,6 +20,12 @@ function App() {
 
         {/* Route pour la page "À propos" */}
         <Route path="/basketball" element={<Basketball />} />
+
+        <Route path="/order-summary" element={<OrderSummary />} />
+
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+
+
 
         {/* Ajoute d'autres routes ici */}
       </Routes>
