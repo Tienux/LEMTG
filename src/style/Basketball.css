@@ -154,6 +154,13 @@
   background-color: #f7c801;
 }
 
+.checkout-button.disabled {
+  background-color: #e0e0e0;
+  color: #a0a0a0;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .header-bar {
   display: flex;
   align-items: center;

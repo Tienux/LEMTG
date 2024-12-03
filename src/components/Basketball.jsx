@@ -3,8 +3,11 @@ import axios from "axios";
 import ConfirmationSupr from "./ConfirmationSupr";
 import Logo from "./Logo"; // Import du composant Logo
 import "../style/Basketball.css";
+import { useNavigate } from "react-router-dom";
 
 function Basketball() {
+
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [quantities, setQuantities] = useState({});
@@ -96,6 +99,26 @@ function Basketball() {
     setProductToDelete(null);
   };
 
+  const handleNavigate = () => {
+    const formattedProducts = products.map((product) => ({
+      ...product,
+      quantity: quantities[product.id],
+    }));
+    navigate("/order-summary", {state: {products: formattedProducts}})
+  }
+
+  const calculateSubtotal = () => {
+    return products
+      .reduce(
+        (total, product) =>
+          total + parseFloat(product.prix || 0) * quantities[product.id],
+        0
+      )
+      .toFixed(2);
+  };
+
+  const subtotal = calculateSubtotal();
+
   return (
     <div>
       {/* Barre en haut avec le logo */}
@@ -176,6 +199,18 @@ function Basketball() {
             </div>
           ))}
         </div>
+        <p className="basket-total">
+          Sous-total ({products.length} article
+          {products.length > 1 ? "s" : ""}) : {subtotal} €
+        </p>
+        <button
+          className={`checkout-button ${subtotal === "0.00" ? "disabled" : ""}`}
+          onClick={handleNavigate}
+          disabled={subtotal === "0.00"}
+        >
+          Passer la commande
+        </button>
+
       </div>
     </div>
   );
