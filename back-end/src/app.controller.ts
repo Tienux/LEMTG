@@ -27,7 +27,10 @@ export class AppController {
     return this.appService.getAllUsers();
   }
 
-
+  @Get('api/users/:urlname')
+  async getUser(@Param('urlname') urlname: string): Promise<any> {
+    return this.appService.getUser(urlname);
+  }
   
 
 }

@@ -43,6 +43,13 @@ export class AppService {
     return result.rows;
   }
 
+
+  async getUser(urlname: string): Promise<any> {
+    const query = 'SELECT * FROM users WHERE name = ?';
+    const result = await this.client.execute(query, [urlname]);
+    return result.rows;
+  }
+    
   async initializeCartsForExistingUser(): Promise<void> {
     const usersQuery = 'SELECT id, idpanier FROM users';
     const usersResult = await this.cassandraClient.execute(usersQuery);
