@@ -37,8 +37,8 @@ export class AppService {
   }
 
   async getUser(urlname: string): Promise<any> {
-    const query = 'SELECT * FROM users WHERE name=urlname';
-    const result = await this.client.execute(query);
+    const query = 'SELECT * FROM users WHERE name=?';
+    const result = await this.client.execute(query, [urlname]);
     return result.rows;
   }
 
