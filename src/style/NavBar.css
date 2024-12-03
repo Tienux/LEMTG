@@ -24,6 +24,11 @@
     cursor: pointer;
   }
   
+  .navbar-button.inscription {
+    background-color: #479ffd;
+    color: white;
+  }
+
   .navbar-button.connexion {
     background-color: #007bff;
     color: white;
