@@ -1,6 +1,6 @@
 import React from "react";
-import NavBar from "./components/NavBar"; // Modifie le chemin selon ton projet
-import Product from "./components/Product"; // Modifie le chemin selon ton projet
+import NavBar from "./components/Navbar";
+import Product from "./components/Product";
 
 function HomePage() {
   return (
