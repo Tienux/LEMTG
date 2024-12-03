@@ -4,6 +4,7 @@ import ConfirmationSupr from "./ConfirmationSupr";
 import Logo from "./Logo"; // Import du composant Logo
 import "../style/Basketball.css";
 import { useNavigate } from "react-router-dom";
+import NavBar from "./Navbar";
 
 function Basketball() {
 
@@ -122,11 +123,7 @@ function Basketball() {
   return (
     <div>
       {/* Barre en haut avec le logo */}
-      <div className="header-bar">
-        <Logo size={100} /> {/* Utilisation du composant Logo */}
-        <h1 className="header-title">Panier</h1>
-      </div>
-
+      <NavBar/>
       {/* Contenu principal */}
       <div className="basket-container">
         <ConfirmationSupr
