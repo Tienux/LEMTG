@@ -11,6 +11,9 @@ const NavBar = () => {
       <Logo size={"100"} />
       
       <div className="navbar-buttons">
+        <button className="navbar-button inscription">
+            Inscription
+          </button>
         <button className="navbar-button connexion">
           Connexion
         </button>
