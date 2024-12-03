@@ -17,27 +17,28 @@ CREATE TABLE IF NOT EXISTS products (
     idcategorie text
 );
 
+
 CREATE TABLE IF NOT EXISTS users (
     id text PRIMARY KEY,
     name text,
-    idpanier text,
+    idpanier text
 );
 
 --Insertion de users 
 INSERT INTO users (id,name,idpanier)
-VALUES ('1','Gabriel','1')
+VALUES ('1','Gabriel','1');
 
 INSERT INTO users (id,name,idpanier)
-VALUES ('2','Etienne','2')
+VALUES ('2','Etienne','2');
 
 INSERT INTO users (id,name,idpanier)
-VALUES ('3','Mathis','3')
+VALUES ('3','Mathis','3');
 
 INSERT INTO users (id,name,idpanier)
-VALUES ('4','Luc','4')
+VALUES ('4','Luc','4');
 
 INSERT INTO users (id,name,idpanier)
-VALUES ('5','Thomas','5')
+VALUES ('5','Thomas','5');
 
 -- Insertion de catégories
 INSERT INTO categories (id, name) 

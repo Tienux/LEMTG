@@ -22,6 +22,12 @@ export class AppController {
     return this.appService.getAllCategories();
   }
 
+  @Get('api/users')
+  async getAllUsers(): Promise<any> {
+    return this.appService.getAllUsers();
+  }
+
+
   
 
 }

@@ -30,6 +30,12 @@ export class AppService {
     return result.rows;
   }
 
+  async getAllUsers(): Promise<any> {
+    const query = 'SELECT * FROM users';
+    const result = await this.client.execute(query);
+    return result.rows;
+  }
+
 
 
 }
