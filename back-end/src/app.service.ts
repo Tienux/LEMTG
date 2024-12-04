@@ -45,8 +45,8 @@ export class AppService {
 
 
   async getUser(urlname: string): Promise<any> {
-    const query = 'SELECT * FROM users WHERE name = ?';
-    const result = await this.client.execute(query, [urlname]);
+    const query = 'SELECT * FROM users WHERE name = ? ALLOW FILTERING';
+    const result = await this.cassandraClient.execute(query, [urlname]);
     return result.rows;
   }
     
