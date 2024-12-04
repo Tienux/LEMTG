@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../style/Product.css";
-import ProductCard from "./ProductCard"; // Import du nouveau composant
+import ProductCard from "./ProductCard";
 
 const Product = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(""); // Nouvel état pour la catégorie sélectionnée
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -41,9 +42,23 @@ const Product = () => {
   const handleSearchChange = (e) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
-    setFilteredData(
-      data.filter((product) => product.nom.toLowerCase().includes(term))
-    );
+    filterProducts(term, selectedCategory); // Combine les deux filtres
+  };
+
+  const handleCategoryChange = (e) => {
+    const category = e.target.value;
+    setSelectedCategory(category);
+    filterProducts(searchTerm, category); // Combine les deux filtres
+  };
+
+  const filterProducts = (term, category) => {
+    const filtered = data.filter((product) => {
+      const matchesCategory =
+        category === "" || product.idcategorie.toString() === category;
+      const matchesSearchTerm = product.nom.toLowerCase().includes(term);
+      return matchesCategory && matchesSearchTerm;
+    });
+    setFilteredData(filtered);
   };
 
   const openModal = (product) => {
@@ -60,7 +75,11 @@ const Product = () => {
     <div>
       {/* Barre de recherche */}
       <div className="search-bar">
-        <select className="category-select">
+        <select
+          className="category-select"
+          value={selectedCategory}
+          onChange={handleCategoryChange} // Gère le changement de catégorie
+        >
           <option value="">Toutes nos catégories</option>
           {Object.keys(categories).map((key) => (
             <option key={key} value={key}>
