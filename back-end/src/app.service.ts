@@ -37,18 +37,49 @@ export class AppService {
     return result.rows;
   }
 
-  async getAllUsers(): Promise<any> {
-    const query = 'SELECT * FROM users';
+  async getAllUsers(): Promise<any[]> {
+    const query = 'SELECT id, idpanier, name FROM users';
     const result = await this.cassandraClient.execute(query);
-    return result.rows;
+    const users = result.rows;
+  
+    // Récupérer les paniers pour chaque utilisateur
+    const usersWithCarts = await Promise.all(
+      users.map(async (user) => {
+        const cart = await this.redisClient.hGetAll(`cart:${user.idpanier}`);
+        return {
+          id: user.id,
+          name: user.name,
+          cartId: user.idpanier,
+          cart,
+        };
+      }),
+    );
+  
+    return usersWithCarts;
   }
+  
+  
 
 
-  async getUser(urlname: string): Promise<any> {
-    const query = 'SELECT * FROM users WHERE name = ? ALLOW FILTERING';
-    const result = await this.cassandraClient.execute(query, [urlname]);
-    return result.rows;
+  async getUser(userId: string): Promise<any> {
+    const userQuery = 'SELECT id, idpanier, name FROM users WHERE id = ?';
+    const userResult = await this.cassandraClient.execute(userQuery, [userId]);
+  
+    if (userResult.rowLength === 0) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+  
+    const user = userResult.rows[0];
+    const cart = await this.redisClient.hGetAll(`cart:${user.idpanier}`);
+  
+    return {
+      id: user.id,
+      name: user.name,
+      cartId: user.idpanier,
+      cart,
+    };
   }
+  
     
   async initializeCartsForExistingUser(): Promise<void> {
     const usersQuery = 'SELECT id, idpanier FROM users';
@@ -61,7 +92,7 @@ export class AppService {
       const cartId = user.idpanier;
       const cartExists = await this.redisClient.exists(`cart:${cartId}`);
       if (!cartExists) {
-        await this.redisClient.hSet(`cart:${cartId}`, {});
+        await this.redisClient.hSet(`cart:${cartId}`, 'initialized', 'true');
         console.log(`Panier initialisé vide pour l'utilisateur ${userId} avec le panier ID ${cartId}`);
       } else {
         console.log(`Le panier ${cartId} pour l'utilisateur ${userId} existe déjà`);

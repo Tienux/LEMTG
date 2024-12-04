@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { AppService } from './app.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -8,6 +9,8 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Authorization', // Tu peux ajouter d'autres headers si nécessaire
   });
+  const appService = app.get(AppService);
+  await appService.initializeCartsForExistingUser()
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
