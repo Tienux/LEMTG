@@ -1,22 +1,27 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ConfirmationSupr from "./ConfirmationSupr";
-import Logo from "./Logo"; // Import du composant Logo
 import "../style/Basketball.css";
 import { useNavigate } from "react-router-dom";
 import NavBar from "./Navbar";
 
 function Basketball() {
-
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [quantities, setQuantities] = useState({});
   const [selectedProducts, setSelectedProducts] = useState([]); // Produits sélectionnés
   const [showModal, setShowModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
 
   useEffect(() => {
+    // Vérifier si le panier existe dans localStorage, sinon l'initialiser vide
+    const basket = JSON.parse(localStorage.getItem("basket")) || [];
+    if (basket.length === 0) {
+      localStorage.setItem("basket", JSON.stringify([])); // Initialiser le panier vide
+    }
+    setProducts(basket);
+
+    // Charger les catégories depuis l'API
     axios
       .get("http://localhost:3000/api/categories")
       .then((response) => {
@@ -27,48 +32,34 @@ function Basketball() {
         setCategories(categoryMap);
       })
       .catch((error) => console.error("Error fetching categories:", error));
-
-    axios
-      .get("http://localhost:3000/api/products")
-      .then((response) => {
-        const initialQuantities = {};
-        response.data.forEach((product) => {
-          initialQuantities[product.id] = 1;
-        });
-        setProducts(response.data);
-        setQuantities(initialQuantities);
-      })
-      .catch((error) => console.error("Error fetching products:", error));
   }, []);
 
   const incrementQuantity = (productId) => {
-    setQuantities((prevQuantities) => ({
-      ...prevQuantities,
-      [productId]: prevQuantities[productId] + 1,
-    }));
+    const updatedProducts = products.map((product) =>
+      product.id === productId
+        ? { ...product, quantity: product.quantity + 1 }
+        : product
+    );
+    setProducts(updatedProducts);
+    localStorage.setItem("basket", JSON.stringify(updatedProducts));
   };
 
   const decrementQuantity = (productId) => {
-    if (quantities[productId] === 1) {
-      // Si la quantité est 1, demande confirmation avant suppression
-      setProductToDelete(products.find((product) => product.id === productId));
-      setShowModal(true);
-    } else {
-      setQuantities((prevQuantities) => ({
-        ...prevQuantities,
-        [productId]: Math.max(1, prevQuantities[productId] - 1),
-      }));
-    }
+    const updatedProducts = products.map((product) =>
+      product.id === productId && product.quantity > 1
+        ? { ...product, quantity: product.quantity - 1 }
+        : product
+    );
+    setProducts(updatedProducts);
+    localStorage.setItem("basket", JSON.stringify(updatedProducts));
   };
 
   const deleteProduct = (productId) => {
-    setProducts((prevProducts) =>
-      prevProducts.filter((product) => product.id !== productId)
+    const updatedProducts = products.filter(
+      (product) => product.id !== productId
     );
-    setQuantities((prevQuantities) => {
-      const { [productId]: _, ...newQuantities } = prevQuantities;
-      return newQuantities;
-    });
+    setProducts(updatedProducts);
+    localStorage.setItem("basket", JSON.stringify(updatedProducts)); // Mettre à jour localStorage
   };
 
   const toggleProductSelection = (productId) => {
@@ -81,9 +72,11 @@ function Basketball() {
   };
 
   const deleteSelectedProducts = () => {
-    setProducts((prevProducts) =>
-      prevProducts.filter((product) => !selectedProducts.includes(product.id))
+    const updatedProducts = products.filter(
+      (product) => !selectedProducts.includes(product.id)
     );
+    setProducts(updatedProducts);
+    localStorage.setItem("basket", JSON.stringify(updatedProducts)); // Mettre à jour localStorage
     setSelectedProducts([]);
   };
 
@@ -101,18 +94,14 @@ function Basketball() {
   };
 
   const handleNavigate = () => {
-    const formattedProducts = products.map((product) => ({
-      ...product,
-      quantity: quantities[product.id],
-    }));
-    navigate("/order-summary", {state: {products: formattedProducts}})
-  }
+    navigate("/order-summary", { state: { products } });
+  };
 
   const calculateSubtotal = () => {
     return products
       .reduce(
         (total, product) =>
-          total + parseFloat(product.prix || 0) * quantities[product.id],
+          total + parseFloat(product.prix || 0) * product.quantity,
         0
       )
       .toFixed(2);
@@ -122,9 +111,7 @@ function Basketball() {
 
   return (
     <div>
-      {/* Barre en haut avec le logo */}
-      <NavBar/>
-      {/* Contenu principal */}
+      <NavBar />
       <div className="basket-container">
         <ConfirmationSupr
           show={showModal}
@@ -134,67 +121,75 @@ function Basketball() {
         />
         <div className="basket-header">
           <h1 className="basket-title">Votre panier</h1>
-          {selectedProducts.length > 0 && (
-            <button
-              className="delete-selected"
-              onClick={deleteSelectedProducts}
-            >
-              Supprimer les éléments sélectionnés
-            </button>
-          )}
+          <div className="action-buttons-container">
+            {selectedProducts.length > 0 && (
+              <button
+                className="delete-selected"
+                onClick={deleteSelectedProducts}
+              >
+                Supprimer les éléments sélectionnés
+              </button>
+            )}
+          </div>
         </div>
         <hr />
         <div className="basket-grid">
-          {products.map((product) => (
-            <div key={product.id} className="basket-item">
-              <div className="checkbox-container">
-                <input
-                  type="checkbox"
-                  className="select-checkbox"
-                  checked={selectedProducts.includes(product.id)}
-                  onChange={() => toggleProductSelection(product.id)}
+          {products.length > 0 ? (
+            products.map((product) => (
+              <div key={product.id} className="basket-item">
+                <div className="checkbox-container">
+                  <input
+                    type="checkbox"
+                    className="select-checkbox"
+                    checked={selectedProducts.includes(product.id)}
+                    onChange={() => toggleProductSelection(product.id)}
+                  />
+                </div>
+                <img
+                  src={product.image || "https://via.placeholder.com/150"}
+                  alt={product.nom}
+                  className="basket-item-image"
                 />
-              </div>
-              <img
-                src={product.image || "https://via.placeholder.com/150"}
-                alt={product.nom}
-                className="basket-item-image"
-              />
-              <div className="basket-item-details">
-                <h2 className="basket-item-title">{product.nom}</h2>
-                <p className="basket-item-category">
-                  Catégorie:{" "}
-                  {categories[product.idcategorie] || "Non spécifiée"}
-                </p>
-                <p className="basket-item-description">{product.description}</p>
-                <p className="basket-item-price">Prix: {product.prix} €</p>
-                <div className="quantity-control">
-                  <button
-                    className="delete-item"
-                    onClick={() => {
-                      setProductToDelete(product);
-                      setShowModal(true);
-                    }}
-                  >
-                    🗑️
-                  </button>
-                  <button
-                    className="decrement"
-                    onClick={() => decrementQuantity(product.id)}
-                  >
-                    -
-                  </button>
-                  <span className="quantity">{quantities[product.id]}</span>
-                  <button
-                    className="increment"
-                    onClick={() => incrementQuantity(product.id)}
-                  >
-                    +
-                  </button>
+                <div className="basket-item-details">
+                  <h2 className="basket-item-title">{product.nom}</h2>
+                  <p className="basket-item-category">
+                    Catégorie:{" "}
+                    {categories[product.idcategorie] || "Non spécifiée"}
+                  </p>
+                  <p className="basket-item-description">
+                    {product.description}
+                  </p>
+                  <p className="basket-item-price">Prix: {product.prix} €</p>
+                  <div className="quantity-control">
+                    <button
+                      className="delete-item"
+                      onClick={() => {
+                        setProductToDelete(product);
+                        setShowModal(true);
+                      }}
+                    >
+                      🗑️
+                    </button>
+                    <button
+                      className="decrement"
+                      onClick={() => decrementQuantity(product.id)}
+                    >
+                      -
+                    </button>
+                    <span className="quantity">{product.quantity}</span>
+                    <button
+                      className="increment"
+                      onClick={() => incrementQuantity(product.id)}
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="empty-basket-message">Votre panier est vide.</p>
+          )}
         </div>
         <p className="basket-total">
           Sous-total ({products.length} article
@@ -207,7 +202,6 @@ function Basketball() {
         >
           Passer la commande
         </button>
-
       </div>
     </div>
   );

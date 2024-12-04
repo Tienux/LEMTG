@@ -1,0 +1,67 @@
+/* Assombrissement de l'arrière-plan */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Couleur semi-transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Conteneur principal de la popup */
+.popup-content {
+  background: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 400px;
+  width: 80%;
+  animation: fadeIn 0.3s ease-in-out; /* Animation d'apparition */
+}
+
+/* Titre de la popup */
+.popup-content h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  color: #4caf50; /* Vert pour indiquer le succès */
+}
+
+/* Texte de description */
+.popup-content p {
+  margin: 0 0 20px;
+  font-size: 16px;
+  color: #333;
+}
+
+/* Bouton de fermeture */
+.popup-close-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.popup-close-button:hover {
+  background-color: #45a049;
+}
+
+/* Animation d'apparition */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

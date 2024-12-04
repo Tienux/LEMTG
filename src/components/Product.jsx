@@ -2,18 +2,20 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../style/Product.css";
 import ProductCard from "./ProductCard";
+import PopupConfirmationAdd from "./PopupConfirmationAdd";
 
 const Product = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(""); // Nouvel état pour la catégorie sélectionnée
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupProductName, setPopupProductName] = useState("");
 
   useEffect(() => {
-    // Récupération des catégories
     axios
       .get("http://localhost:3000/api/categories")
       .then((response) => {
@@ -27,12 +29,11 @@ const Product = () => {
         console.error("Error fetching categories:", error);
       });
 
-    // Récupération des produits
     axios
       .get("http://localhost:3000/api/products")
       .then((response) => {
         setData(response.data);
-        setFilteredData(response.data); // Initialisation des produits filtrés
+        setFilteredData(response.data);
       })
       .catch((error) => {
         console.error("Error fetching products:", error);
@@ -42,13 +43,13 @@ const Product = () => {
   const handleSearchChange = (e) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
-    filterProducts(term, selectedCategory); // Combine les deux filtres
+    filterProducts(term, selectedCategory);
   };
 
   const handleCategoryChange = (e) => {
     const category = e.target.value;
     setSelectedCategory(category);
-    filterProducts(searchTerm, category); // Combine les deux filtres
+    filterProducts(searchTerm, category);
   };
 
   const filterProducts = (term, category) => {
@@ -71,14 +72,39 @@ const Product = () => {
     setSelectedProduct(null);
   };
 
+  const addToBasket = (product) => {
+    // Récupérer les produits existants dans localStorage
+    const basket = JSON.parse(localStorage.getItem("basket")) || [];
+
+    // Vérifier si le produit existe déjà dans le panier
+    const existingProductIndex = basket.findIndex(
+      (item) => item.id === product.id
+    );
+
+    if (existingProductIndex !== -1) {
+      // Si le produit existe, augmenter la quantité
+      basket[existingProductIndex].quantity =
+        (basket[existingProductIndex].quantity || 1) + 1;
+    } else {
+      // Sinon, ajouter le produit avec une quantité de 1
+      basket.push({ ...product, quantity: 1 });
+    }
+
+    // Mettre à jour le panier dans localStorage
+    localStorage.setItem("basket", JSON.stringify(basket));
+
+    // Afficher le popup
+    setPopupProductName(product.nom);
+    setShowPopup(true);
+  };
+
   return (
     <div>
-      {/* Barre de recherche */}
       <div className="search-bar">
         <select
           className="category-select"
           value={selectedCategory}
-          onChange={handleCategoryChange} // Gère le changement de catégorie
+          onChange={handleCategoryChange}
         >
           <option value="">Toutes nos catégories</option>
           {Object.keys(categories).map((key) => (
@@ -97,7 +123,6 @@ const Product = () => {
         <button className="search-button">🔍</button>
       </div>
 
-      {/* Grille des produits */}
       <div className="product-grid">
         {filteredData.map((product) => (
           <ProductCard
@@ -105,11 +130,17 @@ const Product = () => {
             product={product}
             categories={categories}
             onProductClick={openModal}
+            addToBasket={addToBasket}
           />
         ))}
       </div>
 
-      {/* Modal */}
+      <PopupConfirmationAdd
+        show={showPopup}
+        productName={popupProductName}
+        onClose={() => setShowPopup(false)}
+      />
+
       {isModalOpen && selectedProduct && (
         <div className="modal">
           <div className="modal-content">

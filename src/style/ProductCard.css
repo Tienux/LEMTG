@@ -44,3 +44,17 @@
   color: #555;
   font-size: 12px;
 }
+.add-to-basket-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.add-to-basket-button:hover {
+  background-color: #45a049;
+}

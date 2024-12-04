@@ -247,18 +247,34 @@
   gap: 10px;
 }
 
-/* Bouton de suppression multiple */
+.action-buttons-container {
+  display: flex;
+  justify-content: center; /* Centre le conteneur global horizontalement */
+  align-items: center; /* Aligne les boutons verticalement */
+  gap: 10px; /* Espace entre les boutons */
+  margin-top: 10px; /* Ajoute un peu d'espace au-dessus */
+}
+
+.select-all-button,
 .delete-selected {
-  background-color: #ff4500;
+  background-color: #4caf50; /* Couleur verte pour les boutons */
   color: white;
   border: none;
   padding: 10px 15px;
-  font-size: 16px;
-  font-weight: bold;
-  border-radius: 5px;
+  font-size: 14px;
   cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.select-all-button:hover {
+  background-color: #45a049; /* Couleur survol pour le bouton sélectionner */
+}
+
+.delete-selected {
+  background-color: #f44336; /* Couleur rouge pour le bouton supprimer */
 }
 
 .delete-selected:hover {
-  background-color: #e63900;
+  background-color: #e53935; /* Couleur survol pour le bouton supprimer */
 }
