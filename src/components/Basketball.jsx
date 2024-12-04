@@ -71,6 +71,14 @@ function Basketball() {
     );
   };
 
+  const selectAllProducts = () => {
+    setSelectedProducts(products.map((product) => product.id));
+  };
+
+  const deselectAllProducts = () => {
+    setSelectedProducts([]);
+  };
+
   const deleteSelectedProducts = () => {
     const updatedProducts = products.filter(
       (product) => !selectedProducts.includes(product.id)
@@ -130,6 +138,15 @@ function Basketball() {
                 Supprimer les éléments sélectionnés
               </button>
             )}
+            <button className="select-all-button" onClick={selectAllProducts}>
+              Sélectionner tout
+            </button>
+            <button
+              className="deselect-all-button"
+              onClick={deselectAllProducts}
+            >
+              Désélectionner tout
+            </button>
           </div>
         </div>
         <hr />
