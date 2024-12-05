@@ -138,11 +138,11 @@ function Basketball() {
                 Supprimer les éléments sélectionnés
               </button>
             )}
-            <button className="select-all-button" onClick={selectAllProducts}>
+            <button className={`select-all-button ${products.length < 0  ? "" : "disabled"}`} onClick={selectAllProducts}>
               Sélectionner tout
             </button>
             <button
-              className="deselect-all-button"
+              className={`deselect-all-button ${products.length < 0  ? "" : "disabled"}`}
               onClick={deselectAllProducts}
             >
               Désélectionner tout
@@ -205,7 +205,9 @@ function Basketball() {
               </div>
             ))
           ) : (
-            <p className="empty-basket-message">Votre panier est vide.</p>
+            <p className="empty-basket-message">
+              <img src="/panier_vide.svg" alt="Empty basket"  height={"500"}/>
+            </p>
           )}
         </div>
         <p className="basket-total">
@@ -213,7 +215,7 @@ function Basketball() {
           {products.length > 1 ? "s" : ""}) : {subtotal} €
         </p>
         <button
-          className={`checkout-button ${subtotal === "0.00" ? "disabled" : ""}`}
+          className={`checkout-button ${products.length > 0  ? "" : "disabled"}`}
           onClick={handleNavigate}
           disabled={subtotal === "0.00"}
         >

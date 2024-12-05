@@ -5,7 +5,7 @@ const PaymentSuccess = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Redirige vers la page principale après 5 secondes
+        localStorage.removeItem("basket"); // Suppression du panier après paiement
         const timer = setTimeout(() => {
             navigate("/");
         }, 5000);

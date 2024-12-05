@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import "../style/SummaryOrder.css";
 
 const OrderSummary = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { products} = location.state;
-    const [paid, setPaid] = useState(false); // État pour suivre le paiement
-    const [error, setError] = useState(null); // État pour les erreurs de paiement
+    const [paid, setPaid] = useState(false);
+    const [error, setError] = useState(null);
 
     // Calculer le total à partir des données passées
     const calculateTotal = () => {
@@ -19,6 +20,7 @@ const OrderSummary = () => {
         );
         return itemsTotal.toFixed(2);
     };
+    const calculateTaxes = (total) => (parseFloat(total) * 0.2).toFixed(2); // Par exemple, 20% de TVA 
 
     const handleApprove = (details) => {
         setPaid(true);
@@ -31,49 +33,74 @@ const OrderSummary = () => {
     };
 
     const total = calculateTotal();
+    const taxes = calculateTaxes(total);
+    const grandTotal = (parseFloat(total) + parseFloat(taxes)).toFixed(2);
 
     return (
-        <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto", fontFamily: "Arial, sans-serif" }}>
-            <h1>Récapitulatif de Commande</h1>
-            <h3>Client : {products.clientNom}</h3>
-            <div>
-                <h2>Produits :</h2>
-                <ul style={{ listStyle: "none", paddingLeft: "0" }}>
+        <div className="order-summary">
+            {/* Section gauche : Panier */}
+            <div className="products-section">
+                <h2>Panier :</h2>
+                <ul className="product-list">
                     {products.map((item) => (
-                        <li key={item.id} style={{ marginBottom: "10px" }}>
-                            <span style={{ fontWeight: "bold" }}>{item.nom}</span> - {item.quantity} x {item.prix} €
+                        <li key={item.id} className="product-item">
+                            <img src={item.image ? item.image : "https://via.placeholder.com/150"} alt={item.nom} className="product-image" />
+                            <div className="product-info">
+                                <span className="product-name">{item.nom}</span>
+                                <span className="product-quantity">{item.quantity} x {item.prix} €</span>
+                            </div>
                         </li>
                     ))}
                 </ul>
+            </div>
 
-                <h2>Total : {total} €</h2>
+            {/* Section droite : Paiement, taxes, livraison */}
+            <div className="payment-section">
+                <h2>Résumé de la commande :</h2>
+                <div className="summary-details">
+                    <div className="summary-item">
+                        <span>Total des produits :</span>
+                        <span>{total} €</span>
+                    </div>
+                    <div className="summary-item">
+                        <span>TVA (20%) :</span>
+                        <span>{taxes} €</span>
+                    </div>
+                    <div className="summary-item total">
+                        <span>Total :</span>
+                        <span>{grandTotal} €</span>
+                    </div>
 
-                {paid ? (
-                    navigate("/payment-success")
-                ) : (
-                    <PayPalScriptProvider options={{ "client-id": "AehIMflxXZIJnbnyv6iwknlbh_ApxtG6lCUnVgkggOb_b8xCPNcdOyczWInBgG7KpJEXNRTRJixQRDrm", currency: "EUR" }}>
-                        <PayPalButtons
-                            style={{ layout: "vertical" }}
-                            createOrder={(data, actions) => {
-                                return actions.order.create({
-                                    purchase_units: [
-                                        {
-                                            amount: {
-                                                value: total, // Montant total
-                                            },
-                                        },
-                                    ],
-                                });
-                            }}
-                            onApprove={(data, actions) => {
-                                return actions.order.capture().then(handleApprove);
-                            }}
-                            onError={handleError}
-                        />
-                    </PayPalScriptProvider>
-                )}
+                    {/* Paiement via PayPal */}
+                    {paid ? (
+                        navigate("/payment-success")
+                    ) : (
+                        <PayPalScriptProvider options={{ "client-id": "AehIMflxXZIJnbnyv6iwknlbh_ApxtG6lCUnVgkggOb_b8xCPNcdOyczWInBgG7KpJEXNRTRJixQRDrm", currency: "EUR" }}>
+                            <div className="paypal-buttons-container">
+                                <PayPalButtons
+                                    style={{ layout: "vertical" }}
+                                    createOrder={(data, actions) => {
+                                        return actions.order.create({
+                                            purchase_units: [
+                                                {
+                                                    amount: {
+                                                        value: grandTotal, // Montant total avec taxes et livraison
+                                                    },
+                                                },
+                                            ],
+                                        });
+                                    }}
+                                    onApprove={(data, actions) => {
+                                        return actions.order.capture().then(handleApprove);
+                                    }}
+                                    onError={handleError}
+                                />
+                            </div>
+                        </PayPalScriptProvider>
+                    )}
 
-                {error && <h3 style={{ color: "red" }}>{error}</h3>}
+                    {error && <h3 className="error-message">{error}</h3>}
+                </div>
             </div>
         </div>
     );
