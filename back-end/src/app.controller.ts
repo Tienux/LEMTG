@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Delete } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UUID } from 'crypto';
 import { types } from 'cassandra-driver';
@@ -31,6 +31,19 @@ export class AppController {
   async getUser(@Param('urlname') urlname: string): Promise<any> {
     return this.appService.getUser(urlname);
   }
+
+
+
+
   
+  @Post('api/users')
+  async createUser(@Body() body: { name: string }): Promise<any> {
+    return this.appService.createUser(body.name);
+  }
+
+  @Delete('api/users/:id')
+  async deleteUser(@Param('id') id: string): Promise<any> {
+    return await this.appService.deleteUser(id);
+  }
 
 }
