@@ -4,9 +4,11 @@ import ConfirmationSupr from "./ConfirmationSupr";
 import "../style/Basketball.css";
 import { useNavigate } from "react-router-dom";
 import NavBar from "./Navbar";
+import { useAuth } from "../context/AuthContext"; // Import du contexte d'authentification
 
 function Basketball() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth(); // Vérification de l'authentification
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]); // Produits sélectionnés
@@ -14,25 +16,28 @@ function Basketball() {
   const [productToDelete, setProductToDelete] = useState(null);
 
   useEffect(() => {
-    // Vérifier si le panier existe dans localStorage, sinon l'initialiser vide
-    const basket = JSON.parse(localStorage.getItem("basket")) || [];
-    if (basket.length === 0) {
-      localStorage.setItem("basket", JSON.stringify([])); // Initialiser le panier vide
-    }
-    setProducts(basket);
+    if (!isAuthenticated) {
+      navigate("/connexion"); // Redirige vers la page de connexion si non authentifié
+    } else {
+      // Charger les produits et catégories si l'utilisateur est authentifié
+      const basket = JSON.parse(localStorage.getItem("basket")) || [];
+      if (basket.length === 0) {
+        localStorage.setItem("basket", JSON.stringify([])); // Initialiser le panier vide
+      }
+      setProducts(basket);
 
-    // Charger les catégories depuis l'API
-    axios
-      .get("http://localhost:3000/api/categories")
-      .then((response) => {
-        const categoryMap = [];
-        response.data.forEach((category) => {
-          categoryMap[category.id] = category.name;
-        });
-        setCategories(categoryMap);
-      })
-      .catch((error) => console.error("Error fetching categories:", error));
-  }, []);
+      axios
+        .get("http://localhost:3000/api/categories")
+        .then((response) => {
+          const categoryMap = [];
+          response.data.forEach((category) => {
+            categoryMap[category.id] = category.name;
+          });
+          setCategories(categoryMap);
+        })
+        .catch((error) => console.error("Error fetching categories:", error));
+    }
+  }, [isAuthenticated, navigate]);
 
   const incrementQuantity = (productId) => {
     const updatedProducts = products.map((product) =>
@@ -138,11 +143,14 @@ function Basketball() {
                 Supprimer les éléments sélectionnés
               </button>
             )}
-            <button className={`select-all-button ${products.length < 0  ? "" : "disabled"}`} onClick={selectAllProducts}>
+            <button
+              className={`select-all-button ${products.length < 0 ? "" : "disabled"}`}
+              onClick={selectAllProducts}
+            >
               Sélectionner tout
             </button>
             <button
-              className={`deselect-all-button ${products.length < 0  ? "" : "disabled"}`}
+              className={`deselect-all-button ${products.length < 0 ? "" : "disabled"}`}
               onClick={deselectAllProducts}
             >
               Désélectionner tout
@@ -206,7 +214,7 @@ function Basketball() {
             ))
           ) : (
             <p className="empty-basket-message">
-              <img src="/panier_vide.svg" alt="Empty basket"  height={"500"}/>
+              <img src="/panier_vide.svg" alt="Empty basket" height={"500"} />
             </p>
           )}
         </div>
@@ -215,7 +223,7 @@ function Basketball() {
           {products.length > 1 ? "s" : ""}) : {subtotal} €
         </p>
         <button
-          className={`checkout-button ${products.length > 0  ? "" : "disabled"}`}
+          className={`checkout-button ${products.length > 0 ? "" : "disabled"}`}
           onClick={handleNavigate}
           disabled={subtotal === "0.00"}
         >

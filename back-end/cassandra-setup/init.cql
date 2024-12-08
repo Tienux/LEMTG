@@ -21,24 +21,26 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE TABLE IF NOT EXISTS users (
     id text PRIMARY KEY,
     name text,
-    idpanier text
+    idpanier text,
+    password text
 );
 
---Insertion de users 
-INSERT INTO users (id,name,idpanier)
-VALUES ('1','Gabriel','1');
+-- Insertion de users avec mot de passe
+INSERT INTO users (id, name, idpanier, password)
+VALUES ('1', 'Gabriel', '1', '12345');
 
-INSERT INTO users (id,name,idpanier)
-VALUES ('2','Etienne','2');
+INSERT INTO users (id, name, idpanier, password)
+VALUES ('2', 'Etienne', '2', '54321');
 
-INSERT INTO users (id,name,idpanier)
-VALUES ('3','Mathis','3');
+INSERT INTO users (id, name, idpanier, password)
+VALUES ('3', 'Mathis', '3', '21345');
 
-INSERT INTO users (id,name,idpanier)
-VALUES ('4','Luc','4');
+INSERT INTO users (id, name, idpanier, password)
+VALUES ('4', 'Luc', '4', '12345');
 
-INSERT INTO users (id,name,idpanier)
-VALUES ('5','Thomas','5');
+INSERT INTO users (id, name, idpanier, password)
+VALUES ('5', 'Thomas', '5', '12345');
+
 
 -- Insertion de catégories
 INSERT INTO categories (id, name) 
