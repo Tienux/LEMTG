@@ -11,8 +11,10 @@ import { useAuth } from "../context/AuthContext"; // Import du contexte d'authen
  * Si l'utilisateur est connecté, affiche également son nom et un bouton de déconnexion.
  */
 const NavBar = () => {
-  const navigate = useNavigate(); // Hook pour naviguer entre les pages
-  const { isAuthenticated, user, logout } = useAuth(); // Récupère l'état d'authentification et les actions associées
+
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth(); // Récupère l'état d'authentification et l'utilisateur
+
 
   return (
     <nav className="navbar">
@@ -26,7 +28,8 @@ const NavBar = () => {
           <>
             {/* Message personnalisé avec le nom de l'utilisateur */}
             <span className="navbar-user">
-              Bonjour, {user ? user.name : "Utilisateur"}
+              Bonjour, {user.user.name || "Utilisateur"} {/* Affiche le nom de l'utilisateur */}
+
             </span>
             {/* Bouton pour déconnecter l'utilisateur */}
             <button className="navbar-button logout" onClick={logout}>
