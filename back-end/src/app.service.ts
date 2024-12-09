@@ -113,7 +113,6 @@ export class AppService {
   async clearCart(userId: string): Promise<void> {
     await this.redisClient.del(`cart:${userId}`);
   }
-  
   async authenticateUser(username: string, password: string): Promise<any> {
     const query = 'SELECT * FROM users WHERE name = ? ALLOW FILTERING';
     const result = await this.cassandraClient.execute(query, [username]);
@@ -131,5 +130,53 @@ export class AppService {
   
     return null; // Identifiants incorrects
   }
+
+
+  // Création utilisateur
+  async createUser(name: string): Promise<any> {
+    const usersQuery = 'SELECT MAX(id) AS maxId FROM users';
+    const usersResult = await this.cassandraClient.execute(usersQuery);
+    
+    const maxId = parseInt(usersResult.rows[0].maxid || '0', 10); 
+    const userId = (maxId + 1).toString();
   
+    const cartsQuery = 'SELECT MAX(idpanier) AS maxCartId FROM users';
+    const cartsResult = await this.cassandraClient.execute(cartsQuery);
+    
+    const maxCartId = parseInt(cartsResult.rows[0].maxcartid || '0', 10); 
+    const cartId = (maxCartId + 1).toString();
+  
+    const query = 'INSERT INTO users (id, name, idpanier) VALUES (?, ?, ?)';
+    await this.cassandraClient.execute(query, [userId, name, cartId], { prepare: true });
+  
+    const cartExists = await this.redisClient.exists(`cart:${cartId}`);
+    if (!cartExists) {
+      await this.redisClient.hSet(`cart:${cartId}`, 'initialized', 'true');
+      console.log(`Panier initialisé pour l'utilisateur ${name} avec panier ID ${cartId}`);
+    }
+  
+    return { id: userId, name, cartId, cart: { initialized: 'true' } };
+  }
+  
+  
+  
+  
+
+  // Delete user
+  async deleteUser(userId: string): Promise<any> {
+    const userQuery = 'SELECT id, idpanier FROM users WHERE id = ?';
+    const userResult = await this.cassandraClient.execute(userQuery, [userId]);
+
+    if (userResult.rowLength === 0) {
+      throw new Error(`user ${userId} not found`);
+    }
+
+    const deleteQuery = 'DELETE FROM users WHERE id = ?';
+    await this.cassandraClient.execute(deleteQuery, [userId], { prepare: true });
+
+    const cartId = userResult.rows[0].idpanier;
+    await this.redisClient.del(`cart:${cartId}`);
+
+    return { message: `user ${userId} deleted` };
+  }
 }

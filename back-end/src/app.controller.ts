@@ -31,10 +31,25 @@ export class AppController {
   async getUser(@Param('urlname') urlname: string): Promise<any> {
     return this.appService.getUser(urlname);
   }
+
+
+
+
   
+
   @Post('api/login')
   async login(@Body() body: { username: string; password: string }): Promise<any> {
     const { username, password } = body;
+  @Post('api/users')
+  async createUser(@Body() body: { name: string }): Promise<any> {
+    return this.appService.createUser(body.name);
+  }
+
+  @Delete('api/users/:id')
+  async deleteUser(@Param('id') id: string): Promise<any> {
+    return await this.appService.deleteUser(id);
+  }
+
 
     // Vérification des identifiants dans le service
     const user = await this.appService.authenticateUser(username, password);
