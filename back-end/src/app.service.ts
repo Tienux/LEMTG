@@ -117,4 +117,24 @@ export class AppService {
 
     return { message: `user ${userId} deleted` };
   }
+
+  async authenticateUser(username: string, password: string): Promise<any> {
+    // Vérifier l'existence de l'utilisateur dans la base de données
+    const query = 'SELECT id, name, password FROM users WHERE name = ? ALLOW FILTERING';
+    const result = await this.cassandraClient.execute(query, [username]);
+
+    if (result.rowLength === 0) {
+      return null; // Utilisateur non trouvé
+    }
+
+    const user = result.rows[0];
+
+    // Vérifier le mot de passe (assurez-vous de gérer cela correctement avec le hachage en vrai)
+    if (user.password !== password) {
+      return null; // Mot de passe incorrect
+    }
+
+    // Retourner les informations de l'utilisateur si l'authentification réussie
+    return { id: user.id, name: user.name };
+  }
 }

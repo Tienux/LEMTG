@@ -28,7 +28,7 @@ const NavBar = () => {
           <>
             {/* Message personnalisé avec le nom de l'utilisateur */}
             <span className="navbar-user">
-              Bonjour, {user.user.name || "Utilisateur"} {/* Affiche le nom de l'utilisateur */}
+              Bonjour, {user.name || "Utilisateur"} {/* Affiche le nom de l'utilisateur */}
 
             </span>
             {/* Bouton pour déconnecter l'utilisateur */}

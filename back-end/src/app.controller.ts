@@ -1,9 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UnauthorizedException } from '@nestjs/common';
 import { AppService } from './app.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly jwtService: JwtService, // Injecter le service JWT
+  ) {}
 
   @Get()
   async getHello(): Promise<string> {
@@ -39,5 +43,23 @@ export class AppController {
   @Delete('api/users/:id')
   async deleteUser(@Param('id') id: string): Promise<any> {
     return await this.appService.deleteUser(id);
+  }
+
+  @Post('api/login')
+  async login(@Body() body: { username: string; password: string }): Promise<any> {
+    const { username, password } = body;
+
+    // Vérification des identifiants dans la base de données
+    const user = await this.appService.authenticateUser(username, password);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Création du token JWT
+    const payload = { username: user.name, sub: user.id };
+    const token = this.jwtService.sign(payload); // Générer le token
+
+    // Retourner le token JWT et les informations de l'utilisateur
+    return { message: 'Connexion réussie', user, token };
   }
 }
