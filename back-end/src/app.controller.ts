@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UnauthorizedException } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UUID } from 'crypto';
 import { types } from 'cassandra-driver';
@@ -36,6 +36,10 @@ export class AppController {
 
 
   
+
+  @Post('api/login')
+  async login(@Body() body: { username: string; password: string }): Promise<any> {
+    const { username, password } = body;
   @Post('api/users')
   async createUser(@Body() body: { name: string }): Promise<any> {
     return this.appService.createUser(body.name);
@@ -46,4 +50,16 @@ export class AppController {
     return await this.appService.deleteUser(id);
   }
 
+
+    // Vérification des identifiants dans le service
+    const user = await this.appService.authenticateUser(username, password);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Si l'utilisateur est authentifié, renvoyer des données utilisateur
+    return { message: 'Connexion réussie', user };
+  }
+  
 }

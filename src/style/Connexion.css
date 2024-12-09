@@ -1,0 +1,40 @@
+.connexion-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .connexion-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .connexion-form label {
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+  
+  .connexion-form input {
+    padding: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .connexion-form button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .connexion-form button:hover {
+    background-color: #0056b3;
+  }
+  

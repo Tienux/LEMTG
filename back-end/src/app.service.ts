@@ -38,7 +38,7 @@ export class AppService {
   }
 
   async getAllUsers(): Promise<any[]> {
-    const query = 'SELECT id, idpanier, name FROM users';
+    const query = 'SELECT id, idpanier, name, password FROM users'; // Ajout du champ password
     const result = await this.cassandraClient.execute(query);
     const users = result.rows;
   
@@ -49,6 +49,7 @@ export class AppService {
         return {
           id: user.id,
           name: user.name,
+          password: user.password, // Inclure le mot de passe
           cartId: user.idpanier,
           cart,
         };
@@ -62,7 +63,7 @@ export class AppService {
 
 
   async getUser(userId: string): Promise<any> {
-    const userQuery = 'SELECT id, idpanier, name FROM users WHERE id = ?';
+    const userQuery = 'SELECT id, idpanier, name, password FROM users WHERE id = ?'; // Ajout du champ password
     const userResult = await this.cassandraClient.execute(userQuery, [userId]);
   
     if (userResult.rowLength === 0) {
@@ -75,33 +76,13 @@ export class AppService {
     return {
       id: user.id,
       name: user.name,
+      password: user.password, // Inclure le mot de passe
       cartId: user.idpanier,
       cart,
     };
   }
   
-    
-  async initializeCartsForExistingUser(): Promise<void> {
-    const usersQuery = 'SELECT id, idpanier FROM users';
-    const usersResult = await this.cassandraClient.execute(usersQuery);
   
-    const users = usersResult.rows;
-  
-    for (const user of users) {
-      const userId = user.id;
-      const cartId = user.idpanier;
-      const cartExists = await this.redisClient.exists(`cart:${cartId}`);
-      if (!cartExists) {
-        await this.redisClient.hSet(`cart:${cartId}`, 'initialized', 'true');
-        console.log(`Panier initialisé vide pour l'utilisateur ${userId} avec le panier ID ${cartId}`);
-      } else {
-        console.log(`Le panier ${cartId} pour l'utilisateur ${userId} existe déjà`);
-      }
-    }
-  }
-  
-  
-
   // Méthodes Redis (Gestion du Panier)
   async getCart(userId: string): Promise<any> {
     const cart = await this.redisClient.hGetAll(`cart:${userId}`);
@@ -132,10 +113,23 @@ export class AppService {
   async clearCart(userId: string): Promise<void> {
     await this.redisClient.del(`cart:${userId}`);
   }
-
-
-
-
+  async authenticateUser(username: string, password: string): Promise<any> {
+    const query = 'SELECT * FROM users WHERE name = ? ALLOW FILTERING';
+    const result = await this.cassandraClient.execute(query, [username]);
+  
+    if (result.rowLength === 0) {
+      return null; // Utilisateur non trouvé
+    }
+  
+    const user = result.rows[0];
+  
+    // Vérification du mot de passe (pas de sécurité pour l'instant, mais à améliorer plus tard)
+    if (user.password === password) {
+      return { id: user.id, name: user.name, idpanier: user.idpanier };
+    }
+  
+    return null; // Identifiants incorrects
+  }
 
 
   // Création utilisateur
@@ -185,5 +179,4 @@ export class AppService {
 
     return { message: `user ${userId} deleted` };
   }
-
 }
