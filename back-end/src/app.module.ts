@@ -8,8 +8,8 @@ import { AppService } from './app.service';
   imports: [
     ConfigModule.forRoot(), // Charger les variables d'environnement
     JwtModule.register({
-      secret: process.env.JWT_SECRET, // Utilisation de la clé secrète définie dans .env
-      signOptions: { expiresIn: '1h' },
+      secret: 'siuuuuuu',
+      signOptions: { expiresIn: '5m' },
     }),
   ],
   controllers: [AppController],
