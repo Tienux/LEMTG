@@ -4,18 +4,30 @@ import "../style/Product.css";
 import ProductCard from "./ProductCard";
 import PopupConfirmationAdd from "./PopupConfirmationAdd";
 
+// #region Composant principal
+/**
+ * Composant principal pour afficher les produits.
+ * Gère la recherche, le filtrage par catégorie, et l'ajout au panier.
+ */
 const Product = () => {
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupProductName, setPopupProductName] = useState("");
+  // #region États
+  const [data, setData] = useState([]); // Liste complète des produits
+  const [filteredData, setFilteredData] = useState([]); // Produits filtrés à afficher
+  const [searchTerm, setSearchTerm] = useState(""); // Terme de recherche
+  const [selectedCategory, setSelectedCategory] = useState(""); // Catégorie sélectionnée
+  const [isModalOpen, setIsModalOpen] = useState(false); // État pour la modale
+  const [selectedProduct, setSelectedProduct] = useState(null); // Produit sélectionné pour la modale
+  const [categories, setCategories] = useState([]); // Liste des catégories
+  const [showPopup, setShowPopup] = useState(false); // État du popup de confirmation
+  const [popupProductName, setPopupProductName] = useState(""); // Nom du produit ajouté au panier
+  // #endregion
 
+  // #region Effets
+  /**
+   * Chargement des catégories et des produits depuis l'API au montage du composant.
+   */
   useEffect(() => {
+    // Charger les catégories
     axios
       .get("http://localhost:3000/api/categories")
       .then((response) => {
@@ -29,6 +41,7 @@ const Product = () => {
         console.error("Error fetching categories:", error);
       });
 
+    // Charger les produits
     axios
       .get("http://localhost:3000/api/products")
       .then((response) => {
@@ -39,19 +52,30 @@ const Product = () => {
         console.error("Error fetching products:", error);
       });
   }, []);
+  // #endregion
 
+  // #region Gestion des événements
+  /**
+   * Gère la recherche de produits en fonction du terme saisi.
+   */
   const handleSearchChange = (e) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
     filterProducts(term, selectedCategory);
   };
 
+  /**
+   * Gère le changement de catégorie sélectionnée.
+   */
   const handleCategoryChange = (e) => {
     const category = e.target.value;
     setSelectedCategory(category);
     filterProducts(searchTerm, category);
   };
 
+  /**
+   * Filtre les produits en fonction du terme de recherche et de la catégorie.
+   */
   const filterProducts = (term, category) => {
     const filtered = data.filter((product) => {
       const matchesCategory =
@@ -62,44 +86,56 @@ const Product = () => {
     setFilteredData(filtered);
   };
 
+  /**
+   * Ouvre la modale pour un produit donné.
+   */
   const openModal = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
 
+  /**
+   * Ferme la modale.
+   */
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
   };
 
+  /**
+   * Ajoute un produit au panier et affiche le popup de confirmation.
+   */
   const addToBasket = (product) => {
-    // Récupérer les produits existants dans localStorage
+    // Récupérer le panier existant
     const basket = JSON.parse(localStorage.getItem("basket")) || [];
 
-    // Vérifier si le produit existe déjà dans le panier
+    // Vérifier si le produit est déjà dans le panier
     const existingProductIndex = basket.findIndex(
       (item) => item.id === product.id
     );
 
     if (existingProductIndex !== -1) {
-      // Si le produit existe, augmenter la quantité
+      // Augmenter la quantité si le produit existe
       basket[existingProductIndex].quantity =
         (basket[existingProductIndex].quantity || 1) + 1;
     } else {
-      // Sinon, ajouter le produit avec une quantité de 1
+      // Ajouter un nouveau produit avec une quantité de 1
       basket.push({ ...product, quantity: 1 });
     }
 
-    // Mettre à jour le panier dans localStorage
+    // Sauvegarder le panier dans localStorage
     localStorage.setItem("basket", JSON.stringify(basket));
 
-    // Afficher le popup
+    // Afficher le popup de confirmation
     setPopupProductName(product.nom);
     setShowPopup(true);
   };
+  // #endregion
 
+  // #region Rendu
   return (
     <div>
+      {/* Barre de recherche et de filtre */}
       <div className="search-bar">
         <select
           className="category-select"
@@ -123,6 +159,7 @@ const Product = () => {
         <button className="search-button">🔍</button>
       </div>
 
+      {/* Grille des produits */}
       <div className="product-grid">
         {filteredData.map((product) => (
           <ProductCard
@@ -135,12 +172,14 @@ const Product = () => {
         ))}
       </div>
 
+      {/* Popup de confirmation */}
       <PopupConfirmationAdd
         show={showPopup}
         productName={popupProductName}
         onClose={() => setShowPopup(false)}
       />
 
+      {/* Modale de produit */}
       {isModalOpen && selectedProduct && (
         <div className="modal">
           <div className="modal-content">
@@ -169,6 +208,7 @@ const Product = () => {
       )}
     </div>
   );
+  // #endregion
 };
 
 export default Product;
