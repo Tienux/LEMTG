@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext"; // Import du contexte
 
 const NavBar = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, user, logout } = useAuth(); // Récupère l'état d'authentification
+  const { isAuthenticated, user, logout } = useAuth(); // Récupère l'état d'authentification et l'utilisateur
 
   return (
     <nav className="navbar">
@@ -16,7 +16,7 @@ const NavBar = () => {
         {isAuthenticated ? (
           <>
             <span className="navbar-user">
-              Bonjour, {user ? user.name : "Utilisateur"} {/* Affiche le nom de l'utilisateur */}
+              Bonjour, {user.user.name || "Utilisateur"} {/* Affiche le nom de l'utilisateur */}
             </span>
             <button 
               className="navbar-button logout" 

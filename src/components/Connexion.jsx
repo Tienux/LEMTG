@@ -26,11 +26,11 @@ function Connexion() {
       const data = await response.json();
       console.log("Connexion réussie :", data);
 
-      // Mettre à jour le contexte utilisateur avec les données de l'utilisateur
-      login(data.user); // Assure-toi que `data.user` contient bien l'objet utilisateur avec `id`, `name`, etc.
+      // Mettre à jour le contexte utilisateur avec les données de l'utilisateur et le token
+      login(data.user, data.token); // data.token contient le JWT
 
       // Redirection vers la page principale après la connexion
-      navigate("/"); // ou vers n'importe quelle page après la connexion
+      navigate("/"); // ou vers une autre page après la connexion
     } catch (error) {
       console.error("Erreur lors de la connexion :", error.message);
       alert("Identifiants incorrects");
