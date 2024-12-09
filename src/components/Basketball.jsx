@@ -6,26 +6,37 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "./Navbar";
 import { useAuth } from "../context/AuthContext"; // Import du contexte d'authentification
 
+// #region Composant principal
+/**
+ * Composant principal pour gérer un panier de produits.
+ * Permet d'afficher, modifier et supprimer des articles dans un panier.
+ */
 function Basketball() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth(); // Vérification de l'authentification
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]); // Liste des produits dans le panier
+  const [categories, setCategories] = useState([]); // Liste des catégories
   const [selectedProducts, setSelectedProducts] = useState([]); // Produits sélectionnés
-  const [showModal, setShowModal] = useState(false);
-  const [productToDelete, setProductToDelete] = useState(null);
+  const [showModal, setShowModal] = useState(false); // État d'affichage de la modale de confirmation
+  const [productToDelete, setProductToDelete] = useState(null); // Produit à supprimer
 
+  // #region Chargement des données
+  /**
+   * Charge les données nécessaires au panier (produits, catégories).
+   * Redirige l'utilisateur vers la page de connexion s'il n'est pas authentifié.
+   */
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate("/connexion"); // Redirige vers la page de connexion si non authentifié
+      navigate("/connexion"); // Redirige vers la page de connexion
     } else {
-      // Charger les produits et catégories si l'utilisateur est authentifié
+      // Récupération du panier depuis le localStorage
       const basket = JSON.parse(localStorage.getItem("basket")) || [];
       if (basket.length === 0) {
-        localStorage.setItem("basket", JSON.stringify([])); // Initialiser le panier vide
+        localStorage.setItem("basket", JSON.stringify([])); // Initialisation du panier
       }
       setProducts(basket);
 
+      // Récupération des catégories via une requête API
       axios
         .get("http://localhost:3000/api/categories")
         .then((response) => {
@@ -38,7 +49,12 @@ function Basketball() {
         .catch((error) => console.error("Error fetching categories:", error));
     }
   }, [isAuthenticated, navigate]);
+  // #endregion
 
+  // #region Fonctions pour gérer les produits
+  /**
+   * Incrémente la quantité d'un produit dans le panier.
+   */
   const incrementQuantity = (productId) => {
     const updatedProducts = products.map((product) =>
       product.id === productId
@@ -49,6 +65,9 @@ function Basketball() {
     localStorage.setItem("basket", JSON.stringify(updatedProducts));
   };
 
+  /**
+   * Décrémente la quantité d'un produit dans le panier.
+   */
   const decrementQuantity = (productId) => {
     const updatedProducts = products.map((product) =>
       product.id === productId && product.quantity > 1
@@ -59,14 +78,22 @@ function Basketball() {
     localStorage.setItem("basket", JSON.stringify(updatedProducts));
   };
 
+  /**
+   * Supprime un produit du panier.
+   */
   const deleteProduct = (productId) => {
     const updatedProducts = products.filter(
       (product) => product.id !== productId
     );
     setProducts(updatedProducts);
-    localStorage.setItem("basket", JSON.stringify(updatedProducts)); // Mettre à jour localStorage
+    localStorage.setItem("basket", JSON.stringify(updatedProducts));
   };
+  // #endregion
 
+  // #region Gestion de la sélection de produits
+  /**
+   * Bascule la sélection d'un produit.
+   */
   const toggleProductSelection = (productId) => {
     setSelectedProducts(
       (prevSelected) =>
@@ -76,23 +103,37 @@ function Basketball() {
     );
   };
 
+  /**
+   * Sélectionne tous les produits du panier.
+   */
   const selectAllProducts = () => {
     setSelectedProducts(products.map((product) => product.id));
   };
 
+  /**
+   * Désélectionne tous les produits du panier.
+   */
   const deselectAllProducts = () => {
     setSelectedProducts([]);
   };
 
+  /**
+   * Supprime les produits sélectionnés.
+   */
   const deleteSelectedProducts = () => {
     const updatedProducts = products.filter(
       (product) => !selectedProducts.includes(product.id)
     );
     setProducts(updatedProducts);
-    localStorage.setItem("basket", JSON.stringify(updatedProducts)); // Mettre à jour localStorage
+    localStorage.setItem("basket", JSON.stringify(updatedProducts));
     setSelectedProducts([]);
   };
+  // #endregion
 
+  // #region Gestion de la modale de confirmation
+  /**
+   * Confirme la suppression d'un produit.
+   */
   const confirmDelete = () => {
     if (productToDelete) {
       deleteProduct(productToDelete.id);
@@ -101,15 +142,26 @@ function Basketball() {
     setProductToDelete(null);
   };
 
+  /**
+   * Annule la suppression d'un produit.
+   */
   const cancelDelete = () => {
     setShowModal(false);
     setProductToDelete(null);
   };
+  // #endregion
 
+  // #region Navigation et calculs
+  /**
+   * Navigue vers la page de résumé de commande.
+   */
   const handleNavigate = () => {
     navigate("/order-summary", { state: { products } });
   };
 
+  /**
+   * Calcule le sous-total du panier.
+   */
   const calculateSubtotal = () => {
     return products
       .reduce(
@@ -121,6 +173,7 @@ function Basketball() {
   };
 
   const subtotal = calculateSubtotal();
+  // #endregion
 
   return (
     <div>
@@ -143,14 +196,11 @@ function Basketball() {
                 Supprimer les éléments sélectionnés
               </button>
             )}
-            <button
-              className={`select-all-button ${products.length < 0 ? "" : "disabled"}`}
-              onClick={selectAllProducts}
-            >
+            <button className="select-all-button" onClick={selectAllProducts}>
               Sélectionner tout
             </button>
             <button
-              className={`deselect-all-button ${products.length < 0 ? "" : "disabled"}`}
+              className="deselect-all-button"
               onClick={deselectAllProducts}
             >
               Désélectionner tout
@@ -235,3 +285,4 @@ function Basketball() {
 }
 
 export default Basketball;
+// #endregion
