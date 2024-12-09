@@ -133,22 +133,26 @@ export class AppService {
 
 
   // Création utilisateur
-  async createUser(name: string): Promise<any> {
+  async createUser(name: string, password: string): Promise<any> {
+    // Obtenir l'ID utilisateur maximum
     const usersQuery = 'SELECT MAX(id) AS maxId FROM users';
     const usersResult = await this.cassandraClient.execute(usersQuery);
-    
-    const maxId = parseInt(usersResult.rows[0].maxid || '0', 10); 
+  
+    const maxId = parseInt(usersResult.rows[0]?.maxid || '0', 10); 
     const userId = (maxId + 1).toString();
   
+    // Obtenir l'ID panier maximum
     const cartsQuery = 'SELECT MAX(idpanier) AS maxCartId FROM users';
     const cartsResult = await this.cassandraClient.execute(cartsQuery);
-    
-    const maxCartId = parseInt(cartsResult.rows[0].maxcartid || '0', 10); 
+  
+    const maxCartId = parseInt(cartsResult.rows[0]?.maxcartid || '0', 10); 
     const cartId = (maxCartId + 1).toString();
   
-    const query = 'INSERT INTO users (id, name, idpanier) VALUES (?, ?, ?)';
-    await this.cassandraClient.execute(query, [userId, name, cartId], { prepare: true });
+    // Insérer l'utilisateur dans la base de données
+    const query = 'INSERT INTO users (id, name, idpanier, password) VALUES (?, ?, ?, ?)';
+    await this.cassandraClient.execute(query, [userId, name, cartId, password], { prepare: true });
   
+    // Vérifier si le panier existe dans Redis, sinon l'initialiser
     const cartExists = await this.redisClient.exists(`cart:${cartId}`);
     if (!cartExists) {
       await this.redisClient.hSet(`cart:${cartId}`, 'initialized', 'true');
