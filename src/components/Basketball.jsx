@@ -13,7 +13,7 @@ import { useAuth } from "../context/AuthContext"; // Import du contexte d'authen
  */
 function Basketball() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth(); // Vérification de l'authentification
+  const { isAuthenticated, user } = useAuth(); // Vérification de l'authentification
   const [products, setProducts] = useState([]); // Liste des produits dans le panier
   const [categories, setCategories] = useState([]); // Liste des catégories
   const [selectedProducts, setSelectedProducts] = useState([]); // Produits sélectionnés
@@ -26,17 +26,45 @@ function Basketball() {
    * Redirige l'utilisateur vers la page de connexion s'il n'est pas authentifié.
    */
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/connexion"); // Redirige vers la page de connexion
+    if (!isAuthenticated || !user) {
+      navigate("/connexion");
     } else {
-      // Récupération du panier depuis le localStorage
-      const basket = JSON.parse(localStorage.getItem("basket")) || [];
-      if (basket.length === 0) {
-        localStorage.setItem("basket", JSON.stringify([])); // Initialisation du panier
-      }
-      setProducts(basket);
-
-      // Récupération des catégories via une requête API
+      // Récupérer le panier de l'utilisateur
+      axios
+        .get(`http://localhost:3000/api/users/${user.id}/cart`, {
+          headers: { Authorization: `Bearer ${user.token}` },
+        })
+        .then((response) => {
+          const cartProducts = response.data;
+          setProducts(cartProducts);
+  
+          // Récupérer les informations détaillées pour chaque produit
+          const productIds = cartProducts.map(product => product.productId);
+          const productRequests = productIds.map(id =>
+            axios.get(`http://localhost:3000/api/products/${id}`)
+          );
+  
+          // Attendre toutes les requêtes
+          Promise.all(productRequests)
+            .then((productResponses) => {
+              const productsWithDetails = cartProducts.map((cartProduct, index) => {
+                const productDetails = productResponses[index].data;
+                return {
+                  ...cartProduct,
+                  nom: productDetails.nom,
+                  description: productDetails.description,
+                  prix: productDetails.prix,
+                  image: productDetails.image, // Assurez-vous que votre API retourne l'image ou autre propriété visuelle
+                  category: productDetails.category,
+                };
+              });
+              setProducts(productsWithDetails); // Mettre à jour l'état des produits
+            })
+            .catch((error) => console.error("Error fetching product details:", error));
+        })
+        .catch((error) => console.error("Error fetching cart:", error));
+  
+      // Récupération des catégories
       axios
         .get("http://localhost:3000/api/categories")
         .then((response) => {
@@ -48,7 +76,8 @@ function Basketball() {
         })
         .catch((error) => console.error("Error fetching categories:", error));
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, user]);
+  
   // #endregion
 
   // #region Fonctions pour gérer les produits
@@ -56,37 +85,60 @@ function Basketball() {
    * Incrémente la quantité d'un produit dans le panier.
    */
   const incrementQuantity = (productId) => {
-    const updatedProducts = products.map((product) =>
-      product.id === productId
-        ? { ...product, quantity: product.quantity + 1 }
-        : product
-    );
-    setProducts(updatedProducts);
-    localStorage.setItem("basket", JSON.stringify(updatedProducts));
+    const updatedProducts = [...products];
+    const product = updatedProducts.find((p) => p.productId === productId);
+    if (product) {
+      product.quantity += 1;
+
+      // Mettre à jour le panier via l'API
+      axios
+        .post(
+          `http://localhost:3000/api/users/${user.id}/cart`,
+          { productId: productId, quantity: product.quantity },
+          { headers: { Authorization: `Bearer ${user.token}` } }
+        )
+        .then((response) => {
+          setProducts(updatedProducts);
+        })
+        .catch((error) => console.error("Error updating cart:", error));
+    }
   };
 
   /**
    * Décrémente la quantité d'un produit dans le panier.
    */
   const decrementQuantity = (productId) => {
-    const updatedProducts = products.map((product) =>
-      product.id === productId && product.quantity > 1
-        ? { ...product, quantity: product.quantity - 1 }
-        : product
-    );
-    setProducts(updatedProducts);
-    localStorage.setItem("basket", JSON.stringify(updatedProducts));
+    const updatedProducts = [...products];
+    const product = updatedProducts.find((p) => p.productId === productId);
+    if (product && product.quantity > 1) {
+      product.quantity -= 1;
+
+      // Mettre à jour le panier via l'API
+      axios
+        .post(
+          `http://localhost:3000/api/users/${user.id}/cart`,
+          { productId: productId, quantity: product.quantity },
+          { headers: { Authorization: `Bearer ${user.token}` } }
+        )
+        .then((response) => {
+          setProducts(updatedProducts); // Met à jour les produits après la modification
+        })
+        .catch((error) => console.error("Error updating cart:", error));
+    }
   };
 
   /**
    * Supprime un produit du panier.
    */
   const deleteProduct = (productId) => {
-    const updatedProducts = products.filter(
-      (product) => product.id !== productId
-    );
-    setProducts(updatedProducts);
-    localStorage.setItem("basket", JSON.stringify(updatedProducts));
+    axios
+      .delete(`http://localhost:3000/api/users/${user.id}/cart`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      })
+      .then((response) => {
+        setProducts(products.filter((product) => product.id !== productId)); // Filtrer le produit supprimé
+      })
+      .catch((error) => console.error("Error deleting product:", error));
   };
   // #endregion
 
@@ -107,7 +159,7 @@ function Basketball() {
    * Sélectionne tous les produits du panier.
    */
   const selectAllProducts = () => {
-    setSelectedProducts(products.map((product) => product.id));
+    setSelectedProducts(products.map((product) => product.productId));
   };
 
   /**
@@ -211,13 +263,13 @@ function Basketball() {
         <div className="basket-grid">
           {products.length > 0 ? (
             products.map((product) => (
-              <div key={product.id} className="basket-item">
+              <div key={product.productId} className="basket-item">
                 <div className="checkbox-container">
                   <input
                     type="checkbox"
                     className="select-checkbox"
-                    checked={selectedProducts.includes(product.id)}
-                    onChange={() => toggleProductSelection(product.id)}
+                    checked={selectedProducts.includes(product.productId)}
+                    onChange={() => toggleProductSelection(product.productId)}
                   />
                 </div>
                 <img
@@ -228,8 +280,7 @@ function Basketball() {
                 <div className="basket-item-details">
                   <h2 className="basket-item-title">{product.nom}</h2>
                   <p className="basket-item-category">
-                    Catégorie:{" "}
-                    {categories[product.idcategorie] || "Non spécifiée"}
+                    Catégorie: {categories[product.category] || "Non spécifiée"}
                   </p>
                   <p className="basket-item-description">
                     {product.description}
@@ -247,14 +298,14 @@ function Basketball() {
                     </button>
                     <button
                       className="decrement"
-                      onClick={() => decrementQuantity(product.id)}
+                      onClick={() => decrementQuantity(product.productId)}
                     >
                       -
                     </button>
                     <span className="quantity">{product.quantity}</span>
                     <button
                       className="increment"
-                      onClick={() => incrementQuantity(product.id)}
+                      onClick={() => incrementQuantity(product.productId)}
                     >
                       +
                     </button>
@@ -282,6 +333,7 @@ function Basketball() {
       </div>
     </div>
   );
+  
 }
 
 export default Basketball;

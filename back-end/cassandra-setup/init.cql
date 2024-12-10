@@ -21,42 +21,41 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE TABLE IF NOT EXISTS users (
     id text PRIMARY KEY,
     name text,
-    idpanier text,
     password text
 );
 
 -- Insertion de users avec mot de passe
-INSERT INTO users (id, name, idpanier, password)
-VALUES ('1', 'Gabriel', '1', '12345');
+INSERT INTO users (id, name, password)
+VALUES ('1', 'Gabriel', '12345');
 
-INSERT INTO users (id, name, idpanier, password)
-VALUES ('2', 'Etienne', '2', '54321');
+INSERT INTO users (id, name, password)
+VALUES ('2', 'Etienne', '54321');
 
-INSERT INTO users (id, name, idpanier, password)
-VALUES ('3', 'Mathis', '3', '21345');
+INSERT INTO users (id, name, password)
+VALUES ('3', 'Mathis', '21345');
 
-INSERT INTO users (id, name, idpanier, password)
-VALUES ('4', 'Luc', '4', '12345');
+INSERT INTO users (id, name, password)
+VALUES ('4', 'Luc', '12345');
 
-INSERT INTO users (id, name, idpanier, password)
-VALUES ('5', 'Thomas', '5', '12345');
+INSERT INTO users (id, name, password)
+VALUES ('5', 'Thomas', '12345');
 
 
 -- Insertion de catégories
 INSERT INTO categories (id, name) 
-VALUES ('1', 'Électroménager') IF NOT EXISTS;
+VALUES ('1', 'Électroménager');
 
 INSERT INTO categories (id, name) 
-VALUES ('2', 'Mobilier') IF NOT EXISTS;
+VALUES ('2', 'Mobilier');
 
 INSERT INTO categories (id, name) 
-VALUES ('3', 'Sport et Loisirs') IF NOT EXISTS;
+VALUES ('3', 'Sport et Loisirs');
 
 INSERT INTO categories (id, name) 
-VALUES ('4', 'High-Tech') IF NOT EXISTS;
+VALUES ('4', 'High-Tech');
 
 INSERT INTO categories (id, name) 
-VALUES ('5', 'Jardinage') IF NOT EXISTS;
+VALUES ('5', 'Jardinage');
 
 -- Insertion de produits
 INSERT INTO products (id, date_ajout, description, nom, prix, idcategorie) 
