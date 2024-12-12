@@ -14,8 +14,7 @@ const NavBar = () => {
 
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth(); // Récupère l'état d'authentification et l'utilisateur
-
-
+  console.log("user", user);
   return (
     <nav className="navbar">
       {/* Logo redirigeant vers la page d'accueil */}

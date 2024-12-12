@@ -98,7 +98,7 @@ export class AppService {
       console.log(`Panier initialisé pour l'utilisateur ${name} avec panier ID ${cartId}`);
     }
 
-    return { id: userId, name, cartId, cart: { initialized: 'true' } };
+    return { id: userId, name, cartId, cart: { initialized: 'true' } }
   }
 
   async deleteUser(userId: string): Promise<any> {
