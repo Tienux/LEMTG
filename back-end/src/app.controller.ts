@@ -40,10 +40,22 @@ export class AppController {
     return this.appService.getUser(urlname);
   }
 
-  @Post('api/users')
-  async createUser(@Body() body: { name: string; password: string }): Promise<any> {
-    const { name, password } = body;
-    return await this.appService.createUser(name, password);
+  @Post('api/register')
+  async createUser(@Body() body: { username: string; password: string }): Promise<any> {
+    const { username, password } = body;
+    const name = username;
+    const user = await this.appService.createUser(name, password);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Création du token JWT
+    const payload = { username: user.name, sub: user.id };
+    const token = this.jwtService.sign(payload); // Générer le token
+
+    // Retourner le token JWT et les informations de l'utilisateur
+    return { message: 'Inscription Reussi', user, token };
   }
 
   @Delete('api/users/:id')

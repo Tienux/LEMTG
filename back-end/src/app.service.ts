@@ -87,7 +87,6 @@ export class AppService {
     const usersResult = await this.cassandraClient.execute(usersQuery);
     const maxId = parseInt(usersResult.rows[0]?.maxid || '0', 10); 
     const userId = (maxId + 1).toString();
-  
     const query = 'INSERT INTO users (id, name, password) VALUES (?, ?, ?)';
     await this.cassandraClient.execute(query, [userId, name, password], { prepare: true });
   
