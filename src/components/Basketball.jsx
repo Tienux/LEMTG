@@ -84,62 +84,48 @@ function Basketball() {
   /**
    * Incrémente la quantité d'un produit dans le panier.
    */
-  const incrementQuantity = (productId) => {
+  const updateProductQuantity = (productId, newQuantity) => {
     const updatedProducts = [...products];
     const product = updatedProducts.find((p) => p.productId === productId);
     if (product) {
-      product.quantity += 1;
-
-      // Mettre à jour le panier via l'API
+      if (newQuantity === 0) {
+        axios
+          .delete(`http://localhost:3000/api/users/${user.id}/cart`, {
+            data: { productId: productId }, // Correct way to pass body data with DELETE
+            headers: { Authorization: `Bearer ${user.token}` },
+          })
+          .then(() => {
+            // Remove product from the local state
+            setProducts(updatedProducts.filter((p) => p.productId !== productId));
+          })
+          .catch((error) =>
+            console.error("Error deleting product from cart:", error)
+          );
+        return; // Exit early since no further action is needed
+      }
+  
+      // Update quantity locally
+      product.quantity = newQuantity;
+  
+      // Update cart via API
       axios
         .post(
           `http://localhost:3000/api/users/${user.id}/cart`,
-          { productId: productId, quantity: product.quantity },
+          { productId: productId, quantity: newQuantity },
           { headers: { Authorization: `Bearer ${user.token}` } }
         )
-        .then((response) => {
-          setProducts(updatedProducts);
+        .then(() => {
+          setProducts(updatedProducts); // Update UI after successful API call
         })
-        .catch((error) => console.error("Error updating cart:", error));
+        .catch((error) => {
+          console.error("Error updating cart:", error);
+          // Optionally rollback UI changes in case of error
+          product.quantity = product.quantity + (newQuantity > product.quantity ? -1 : 1);
+          setProducts([...updatedProducts]);
+        });
     }
   };
-
-  /**
-   * Décrémente la quantité d'un produit dans le panier.
-   */
-  const decrementQuantity = (productId) => {
-    const updatedProducts = [...products];
-    const product = updatedProducts.find((p) => p.productId === productId);
-    if (product && product.quantity > 1) {
-      product.quantity -= 1;
-
-      // Mettre à jour le panier via l'API
-      axios
-        .post(
-          `http://localhost:3000/api/users/${user.id}/cart`,
-          { productId: productId, quantity: product.quantity },
-          { headers: { Authorization: `Bearer ${user.token}` } }
-        )
-        .then((response) => {
-          setProducts(updatedProducts); // Met à jour les produits après la modification
-        })
-        .catch((error) => console.error("Error updating cart:", error));
-    }
-  };
-
-  /**
-   * Supprime un produit du panier.
-   */
-  const deleteProduct = (productId) => {
-    axios
-      .delete(`http://localhost:3000/api/users/${user.id}/cart`, {
-        headers: { Authorization: `Bearer ${user.token}` },
-      })
-      .then((response) => {
-        setProducts(products.filter((product) => product.id !== productId)); // Filtrer le produit supprimé
-      })
-      .catch((error) => console.error("Error deleting product:", error));
-  };
+  
   // #endregion
 
   // #region Gestion de la sélection de produits
@@ -173,13 +159,37 @@ function Basketball() {
    * Supprime les produits sélectionnés.
    */
   const deleteSelectedProducts = () => {
-    const updatedProducts = products.filter(
-      (product) => !selectedProducts.includes(product.id)
+    // Récupérez les produits sélectionnés à supprimer
+    const productsToDelete = products.filter((product) =>
+      selectedProducts.includes(product.id)
     );
-    setProducts(updatedProducts);
-    localStorage.setItem("basket", JSON.stringify(updatedProducts));
+    
+    // Initialisez une copie du panier pour la mise à jour
+    let updatedProducts = [...products];
+    // Effectuez une suppression pour chaque produit
+    productsToDelete.forEach((product) => {
+      axios
+        .delete(`http://localhost:3000/api/users/${user.id}/cart`, {
+          data: { productId: product.id },
+          headers: { Authorization: `Bearer ${user.token}` },
+        })
+        .then(() => {
+          updatedProducts = updatedProducts.filter((p) => p.id !== product.id);
+          setProducts(updatedProducts);
+        })
+        .catch((error) => {
+          console.error(
+            `Error deleting product with ID ${product.id} from cart:`,
+            error
+          );
+        });
+    });
+  
+    // Réinitialisez les produits sélectionnés
     setSelectedProducts([]);
   };
+  
+  
   // #endregion
 
   // #region Gestion de la modale de confirmation
@@ -287,28 +297,41 @@ function Basketball() {
                   </p>
                   <p className="basket-item-price">Prix: {product.prix} €</p>
                   <div className="quantity-control">
-                    <button
+                  <button
                       className="delete-item"
                       onClick={() => {
-                        setProductToDelete(product);
-                        setShowModal(true);
+                        const targetProduct = products.find((p) => p.productId === product.productId);
+                        if (targetProduct) {
+                          updateProductQuantity(targetProduct.productId, 0);
+                        }
                       }}
                     >
                       🗑️
                     </button>
                     <button
                       className="decrement"
-                      onClick={() => decrementQuantity(product.productId)}
+                      onClick={() => {
+                        const targetProduct = products.find((p) => p.productId === product.productId);
+                        if (targetProduct) {
+                          updateProductQuantity(targetProduct.productId, targetProduct.quantity - 1);
+                        }
+                      }}
                     >
                       -
                     </button>
                     <span className="quantity">{product.quantity}</span>
                     <button
                       className="increment"
-                      onClick={() => incrementQuantity(product.productId)}
+                      onClick={() => {
+                        const targetProduct = products.find((p) => p.productId === product.productId);
+                        if (targetProduct) {
+                          updateProductQuantity(targetProduct.productId, targetProduct.quantity + 1);
+                        }
+                      }}
                     >
                       +
                     </button>
+
                   </div>
                 </div>
               </div>

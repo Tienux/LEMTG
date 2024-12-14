@@ -72,22 +72,21 @@ export class AppController {
 
   // Panier
   @Post('api/users/:userId/cart')
-  async addToCart(
+  async setProductToCart(
     @Param('userId') userId: string,
     @Body() body: { productId: string; quantity: number }
   ): Promise<any> {
     const { productId, quantity } = body;
-    return this.appService.addToCart(userId, productId, quantity);
+    return this.appService.setProductToCart(userId, productId, quantity);
   }
 
-  // Nouvelle méthode pour supprimer un produit du panier
   @Delete('api/users/:userId/cart')
-  async removeFromCart(
+  async removeProductFromCart(
     @Param('userId') userId: string,
-    @Body() body: { productId: string; quantity: number }
+    @Body() body: { productId: string }
   ): Promise<any> {
-    const { productId, quantity } = body;
-    return this.appService.removeFromCart(userId, productId, quantity);
+    const { productId } = body;
+    return this.appService.removeProductFromCart(userId, productId);
   }
 
   // Nouvelle méthode pour récupérer le panier d'un utilisateur

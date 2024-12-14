@@ -134,36 +134,16 @@ export class AppService {
 
 
   //panier
-  async addToCart(userId: string, productId: string, quantity: number): Promise<any> {
+  async setProductToCart(userId: string, productId: string, quantity: number): Promise<any> {
     const cartKey = `cart:${userId}`;
-    const existingQuantity = await this.redisClient.hGet(cartKey, productId);
-  
-    const newQuantity = existingQuantity 
-      ? parseInt(existingQuantity) + quantity 
-      : quantity;
-  
-    await this.redisClient.hSet(cartKey, productId, newQuantity);
-  
-    return { productId, quantity: newQuantity };
+    await this.redisClient.hSet(cartKey, productId, quantity);
   }
 
-  async removeFromCart(userId: string, productId: string, quantity: number): Promise<any> {
+  async removeProductFromCart(userId: string, productId: string): Promise<any> {
     const cartKey = `cart:${userId}`;
-    const existingQuantity = await this.redisClient.hGet(cartKey, productId);
-  
-    if (!existingQuantity) {
-      throw new Error(`Product ${productId} not in cart`);
-    }
-  
-    const newQuantity = parseInt(existingQuantity) - quantity;
-    if (newQuantity <= 0) {
-      await this.redisClient.hDel(cartKey, productId);
-    } else {
-      await this.redisClient.hSet(cartKey, productId, newQuantity);
-    }
-  
-    return { productId, quantity: newQuantity };
+    await this.redisClient.hDel(cartKey, productId);
   }
+
 
   async getCart(userId: string): Promise<{ productId: string; quantity: number }[]> {
   const cartKey = `cart:${userId}`;
