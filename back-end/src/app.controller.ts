@@ -19,6 +19,12 @@ export class AppController {
     return this.appService.getAllProducts();
   }
 
+  @Get('api/products/:id')
+  async getProduct(@Param('id') id: string): Promise<any> {
+    return this.appService.getProduct(id);
+  }
+
+
   @Get('api/categories')
   async getAllCategories(): Promise<any> {
     return this.appService.getAllCategories();
@@ -73,5 +79,37 @@ export class AppController {
 
     // Retourner le token JWT et les informations de l'utilisateur
     return { message: 'Connexion réussie', user, token };
+  }
+
+
+  // Panier
+  @Post('api/users/:userId/cart')
+  async setProductToCart(
+    @Param('userId') userId: string,
+    @Body() body: { productId: string; quantity: number }
+  ): Promise<any> {
+    const { productId, quantity } = body;
+    return this.appService.setProductToCart(userId, productId, quantity);
+  }
+
+  @Delete('api/users/:userId/cart')
+  async removeProductFromCart(
+    @Param('userId') userId: string,
+    @Body() body: { productId: string }
+  ): Promise<any> {
+    const { productId } = body;
+    return this.appService.removeProductFromCart(userId, productId);
+  }
+
+  // Nouvelle méthode pour récupérer le panier d'un utilisateur
+  @Get('api/users/:userId/cart')
+  async getCart(@Param('userId') userId: string): Promise<any> {
+    return this.appService.getCart(userId);
+  }
+
+  // Nouvelle méthode pour vider le panier d'un utilisateur
+  @Delete('api/users/:userId/cart/clear')
+  async clearCart(@Param('userId') userId: string): Promise<any> {
+    return this.appService.clearCart(userId);
   }
 }

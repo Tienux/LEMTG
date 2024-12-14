@@ -31,6 +31,13 @@ export class AppService {
     return result.rows;
   }
 
+  async getProduct(productId: string): Promise<any> {
+    const query = 'SELECT * FROM products WHERE id = ?';
+    const result = await this.cassandraClient.execute(query, [productId], { prepare: true });
+    return result.rows[0];
+  }
+  
+
   async getAllCategories(): Promise<any> {
     const query = 'SELECT * FROM categories';
     const result = await this.cassandraClient.execute(query);
@@ -38,28 +45,25 @@ export class AppService {
   }
 
   async getAllUsers(): Promise<any[]> {
-    const query = 'SELECT id, idpanier, name, password FROM users';
+    const query = 'SELECT id, name, password FROM users';
     const result = await this.cassandraClient.execute(query);
     const users = result.rows;
   
-    const usersWithCarts = await Promise.all(
+    return await Promise.all(
       users.map(async (user) => {
-        const cart = await this.redisClient.hGetAll(`cart:${user.idpanier}`);
+        const cart = await this.redisClient.hGetAll(`cart:${user.id}`);
         return {
           id: user.id,
           name: user.name,
           password: user.password,
-          cartId: user.idpanier,
-          cart,
+          cart: Object.keys(cart).length > 0 ? cart : {},
         };
       }),
     );
-  
-    return usersWithCarts;
   }
-
+  
   async getUser(userId: string): Promise<any> {
-    const userQuery = 'SELECT id, idpanier, name, password FROM users WHERE id = ?';
+    const userQuery = 'SELECT id, name, password FROM users WHERE id = ?';
     const userResult = await this.cassandraClient.execute(userQuery, [userId]);
   
     if (userResult.rowLength === 0) {
@@ -67,39 +71,28 @@ export class AppService {
     }
   
     const user = userResult.rows[0];
-    const cart = await this.redisClient.hGetAll(`cart:${user.idpanier}`);
+    const cart = await this.redisClient.hGetAll(`cart:${user.id}`);
   
     return {
       id: user.id,
       name: user.name,
       password: user.password,
-      cartId: user.idpanier,
-      cart,
+      cart: Object.keys(cart).length > 0 ? cart : {},
     };
   }
+  
 
   async createUser(name: string, password: string): Promise<any> {
     const usersQuery = 'SELECT MAX(id) AS maxId FROM users';
     const usersResult = await this.cassandraClient.execute(usersQuery);
     const maxId = parseInt(usersResult.rows[0]?.maxid || '0', 10); 
     const userId = (maxId + 1).toString();
-
-    const cartsQuery = 'SELECT MAX(idpanier) AS maxCartId FROM users';
-    const cartsResult = await this.cassandraClient.execute(cartsQuery);
-    const maxCartId = parseInt(cartsResult.rows[0]?.maxcartid || '0', 10); 
-    const cartId = (maxCartId + 1).toString();
-
-    const query = 'INSERT INTO users (id, name, idpanier, password) VALUES (?, ?, ?, ?)';
-    await this.cassandraClient.execute(query, [userId, name, cartId, password], { prepare: true });
-
-    const cartExists = await this.redisClient.exists(`cart:${cartId}`);
-    if (!cartExists) {
-      await this.redisClient.hSet(`cart:${cartId}`, 'initialized', 'true');
-      console.log(`Panier initialisé pour l'utilisateur ${name} avec panier ID ${cartId}`);
-    }
-
-    return { id: userId, name, cartId, cart: { initialized: 'true' } }
+    const query = 'INSERT INTO users (id, name, password) VALUES (?, ?, ?)';
+    await this.cassandraClient.execute(query, [userId, name, password], { prepare: true });
+  
+    return { id: userId, name };
   }
+  
 
   async deleteUser(userId: string): Promise<any> {
     const userQuery = 'SELECT id, idpanier FROM users WHERE id = ?';
@@ -137,4 +130,42 @@ export class AppService {
     // Retourner les informations de l'utilisateur si l'authentification réussie
     return { id: user.id, name: user.name };
   }
+
+
+  //panier
+  async setProductToCart(userId: string, productId: string, quantity: number): Promise<any> {
+    const cartKey = `cart:${userId}`;
+    await this.redisClient.hSet(cartKey, productId, quantity);
+  }
+
+  async removeProductFromCart(userId: string, productId: string): Promise<any> {
+    const cartKey = `cart:${userId}`;
+    await this.redisClient.hDel(cartKey, productId);
+  }
+
+
+  async getCart(userId: string): Promise<{ productId: string; quantity: number }[]> {
+  const cartKey = `cart:${userId}`;
+  const cart = await this.redisClient.hGetAll(cartKey);
+
+  // Convertir les valeurs en entiers pour les quantités
+  const cartItems = Object.entries(cart).map(([productId, quantity]) => ({
+    productId,
+    quantity: parseInt(quantity as string, 10),
+  }));
+
+  return cartItems.length > 0 ? cartItems : [];
+}
+
+
+  async clearCart(userId: string): Promise<any> {
+    const cartKey = `cart:${userId}`;
+    await this.redisClient.del(cartKey);
+  
+    return { message: `Cart cleared for user ${userId}` };
+  }
+  
+
+  
+
 }

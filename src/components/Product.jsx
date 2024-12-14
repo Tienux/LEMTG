@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../style/Product.css";
 import ProductCard from "./ProductCard";
+import { useNavigate } from "react-router-dom";
 import PopupConfirmationAdd from "./PopupConfirmationAdd";
+import { useAuth } from "../context/AuthContext";
 
 // #region Composant principal
 /**
@@ -11,6 +13,8 @@ import PopupConfirmationAdd from "./PopupConfirmationAdd";
  */
 const Product = () => {
   // #region États
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
   const [data, setData] = useState([]); // Liste complète des produits
   const [filteredData, setFilteredData] = useState([]); // Produits filtrés à afficher
   const [searchTerm, setSearchTerm] = useState(""); // Terme de recherche
@@ -106,30 +110,24 @@ const Product = () => {
    * Ajoute un produit au panier et affiche le popup de confirmation.
    */
   const addToBasket = (product) => {
-    // Récupérer le panier existant
-    const basket = JSON.parse(localStorage.getItem("basket")) || [];
-
-    // Vérifier si le produit est déjà dans le panier
-    const existingProductIndex = basket.findIndex(
-      (item) => item.id === product.id
-    );
-
-    if (existingProductIndex !== -1) {
-      // Augmenter la quantité si le produit existe
-      basket[existingProductIndex].quantity =
-        (basket[existingProductIndex].quantity || 1) + 1;
-    } else {
-      // Ajouter un nouveau produit avec une quantité de 1
-      basket.push({ ...product, quantity: 1 });
-    }
-
-    // Sauvegarder le panier dans localStorage
-    localStorage.setItem("basket", JSON.stringify(basket));
-
-    // Afficher le popup de confirmation
-    setPopupProductName(product.nom);
-    setShowPopup(true);
+    axios
+      .post(
+        `http://localhost:3000/api/users/${user.id}/cart`,
+        { productId: product.id, quantity: 1 }, // Par défaut, on ajoute une unité
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      )
+      .then(() => {
+        // Afficher un popup de confirmation à l'utilisateur
+        setPopupProductName(product.nom);
+        setShowPopup(true);
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'ajout au panier :", error);
+      });
   };
+  
+
+  
   // #endregion
 
   // #region Rendu
