@@ -110,21 +110,56 @@ const Product = () => {
    * Ajoute un produit au panier et affiche le popup de confirmation.
    */
   const addToBasket = (product) => {
+    // Récupérer le panier actuel
     axios
-      .post(
-        `http://localhost:3000/api/users/${user.id}/cart`,
-        { productId: product.id, quantity: 1 }, // Par défaut, on ajoute une unité
-        { headers: { Authorization: `Bearer ${user.token}` } }
-      )
-      .then(() => {
-        // Afficher un popup de confirmation à l'utilisateur
-        setPopupProductName(product.nom);
-        setShowPopup(true);
+      .get(`http://localhost:3000/api/users/${user.id}/cart`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      })
+      .then((response) => {
+        const cart = response.data;
+  
+        // Vérifier si le produit est déjà dans le panier
+        const existingProduct = cart.find((item) => item.productId === product.id);
+  
+        if (existingProduct) {
+          // Si le produit existe, incrémenter sa quantité
+          axios
+            .post(
+              `http://localhost:3000/api/users/${user.id}/cart`,
+              { productId: product.id, quantity: existingProduct.quantity + 1 }, // Incrémenter la quantité
+              { headers: { Authorization: `Bearer ${user.token}` } }
+            )
+            .then(() => {
+              // Afficher un popup de confirmation à l'utilisateur
+              setPopupProductName(product.nom);
+              setShowPopup(true);
+            })
+            .catch((error) => {
+              console.error("Erreur lors de la mise à jour de la quantité :", error);
+            });
+        } else {
+          // Si le produit n'existe pas, l'ajouter au panier
+          axios
+            .post(
+              `http://localhost:3000/api/users/${user.id}/cart`,
+              { productId: product.id, quantity: 1 }, // Ajouter une unité par défaut
+              { headers: { Authorization: `Bearer ${user.token}` } }
+            )
+            .then(() => {
+              // Afficher un popup de confirmation à l'utilisateur
+              setPopupProductName(product.nom);
+              setShowPopup(true);
+            })
+            .catch((error) => {
+              console.error("Erreur lors de l'ajout au panier :", error);
+            });
+        }
       })
       .catch((error) => {
-        console.error("Erreur lors de l'ajout au panier :", error);
+        console.error("Erreur lors de la récupération du panier :", error);
       });
   };
+  
   
 
   
