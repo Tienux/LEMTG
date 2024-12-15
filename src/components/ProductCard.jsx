@@ -13,7 +13,7 @@ import "../style/ProductCard.css";
  */
 const ProductCard = ({ product, categories, onProductClick, addToBasket }) => {
   return (
-    <div className="product-card">
+    <div className="product-card" onClick={() => onProductClick(product)}>
       {/* Titre du produit */}
       <h3 className="product-title">{product.nom}</h3>
 
@@ -34,19 +34,13 @@ const ProductCard = ({ product, categories, onProductClick, addToBasket }) => {
           Catégorie: {categories[product.idcategorie] || "Non spécifiée"}
         </p>
       </div>
-
-      {/* Bouton pour afficher les détails */}
-      <button
-        className="details-button"
-        onClick={() => onProductClick(product)}
-      >
-        Voir les détails
-      </button>
-
       {/* Bouton pour ajouter au panier */}
       <button
         className="add-to-basket-button"
-        onClick={() => addToBasket(product)}
+        onClick={(event) => {
+          event.stopPropagation()
+          addToBasket(product)}
+        }
       >
         Ajouter au panier
       </button>

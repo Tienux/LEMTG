@@ -18,13 +18,9 @@ function Basketball() {
   const [categories, setCategories] = useState([]); // Liste des catégories
   const [selectedProducts, setSelectedProducts] = useState([]); // Produits sélectionnés
   const [showModal, setShowModal] = useState(false); // État d'affichage de la modale de confirmation
-  const [productToDelete, setProductToDelete] = useState(null); // Produit à supprimer
+  const [productsToDelete, setProductsToDelete] = useState([]); // Produits à supprimer
 
   // #region Chargement des données
-  /**
-   * Charge les données nécessaires au panier (produits, catégories).
-   * Redirige l'utilisateur vers la page de connexion s'il n'est pas authentifié.
-   */
   useEffect(() => {
     if (!isAuthenticated || !user) {
       navigate("/connexion");
@@ -37,14 +33,13 @@ function Basketball() {
         .then((response) => {
           const cartProducts = response.data;
           setProducts(cartProducts);
-  
+
           // Récupérer les informations détaillées pour chaque produit
-          const productIds = cartProducts.map(product => product.productId);
-          const productRequests = productIds.map(id =>
+          const productIds = cartProducts.map((product) => product.productId);
+          const productRequests = productIds.map((id) =>
             axios.get(`http://localhost:3000/api/products/${id}`)
           );
-  
-          // Attendre toutes les requêtes
+
           Promise.all(productRequests)
             .then((productResponses) => {
               const productsWithDetails = cartProducts.map((cartProduct, index) => {
@@ -54,16 +49,16 @@ function Basketball() {
                   nom: productDetails.nom,
                   description: productDetails.description,
                   prix: productDetails.prix,
-                  image: productDetails.image, // Assurez-vous que votre API retourne l'image ou autre propriété visuelle
+                  image: productDetails.image,
                   category: productDetails.category,
                 };
               });
-              setProducts(productsWithDetails); // Mettre à jour l'état des produits
+              setProducts(productsWithDetails);
             })
             .catch((error) => console.error("Error fetching product details:", error));
         })
         .catch((error) => console.error("Error fetching cart:", error));
-  
+
       // Récupération des catégories
       axios
         .get("http://localhost:3000/api/categories")
@@ -77,13 +72,9 @@ function Basketball() {
         .catch((error) => console.error("Error fetching categories:", error));
     }
   }, [isAuthenticated, navigate, user]);
-  
   // #endregion
 
   // #region Fonctions pour gérer les produits
-  /**
-   * Incrémente la quantité d'un produit dans le panier.
-   */
   const updateProductQuantity = (productId, newQuantity) => {
     const updatedProducts = [...products];
     const product = updatedProducts.find((p) => p.productId === productId);
@@ -91,23 +82,19 @@ function Basketball() {
       if (newQuantity === 0) {
         axios
           .delete(`http://localhost:3000/api/users/${user.id}/cart`, {
-            data: { productId: productId }, // Correct way to pass body data with DELETE
+            data: { productId: productId },
             headers: { Authorization: `Bearer ${user.token}` },
           })
           .then(() => {
-            // Remove product from the local state
             setProducts(updatedProducts.filter((p) => p.productId !== productId));
           })
           .catch((error) =>
             console.error("Error deleting product from cart:", error)
           );
-        return; // Exit early since no further action is needed
+        return;
       }
-  
-      // Update quantity locally
       product.quantity = newQuantity;
-  
-      // Update cart via API
+
       axios
         .post(
           `http://localhost:3000/api/users/${user.id}/cart`,
@@ -115,115 +102,100 @@ function Basketball() {
           { headers: { Authorization: `Bearer ${user.token}` } }
         )
         .then(() => {
-          setProducts(updatedProducts); // Update UI after successful API call
+          setProducts(updatedProducts);
         })
         .catch((error) => {
           console.error("Error updating cart:", error);
-          // Optionally rollback UI changes in case of error
           product.quantity = product.quantity + (newQuantity > product.quantity ? -1 : 1);
           setProducts([...updatedProducts]);
         });
     }
   };
-  
-  // #endregion
 
-  // #region Gestion de la sélection de produits
-  /**
-   * Bascule la sélection d'un produit.
-   */
-  const toggleProductSelection = (productId) => {
-    setSelectedProducts(
-      (prevSelected) =>
-        prevSelected.includes(productId)
-          ? prevSelected.filter((id) => id !== productId) // Dé-sélectionner
-          : [...prevSelected, productId] // Ajouter à la sélection
-    );
-  };
-
-  /**
-   * Sélectionne tous les produits du panier.
-   */
-  const selectAllProducts = () => {
-    setSelectedProducts(products.map((product) => product.productId));
-  };
-
-  /**
-   * Désélectionne tous les produits du panier.
-   */
-  const deselectAllProducts = () => {
-    setSelectedProducts([]);
-  };
-
-  /**
-   * Supprime les produits sélectionnés.
-   */
   const deleteSelectedProducts = () => {
-    // Récupérez les produits sélectionnés à supprimer
+    console.log("Selected Products to delete: ", selectedProducts);
+  
+    // Récupérer les produits correspondant aux IDs dans selectedProducts
     const productsToDelete = products.filter((product) =>
-      selectedProducts.includes(product.id)
+      selectedProducts.includes(product.productId)
     );
-    
-    // Initialisez une copie du panier pour la mise à jour
     let updatedProducts = [...products];
-    // Effectuez une suppression pour chaque produit
+  
+    // Pour chaque produit à supprimer
     productsToDelete.forEach((product) => {
       axios
         .delete(`http://localhost:3000/api/users/${user.id}/cart`, {
-          data: { productId: product.id },
+          data: { productId: product.productId },
           headers: { Authorization: `Bearer ${user.token}` },
         })
         .then(() => {
-          updatedProducts = updatedProducts.filter((p) => p.id !== product.id);
+          updatedProducts = updatedProducts.filter(
+            (p) => p.productId !== product.productId
+          );
           setProducts(updatedProducts);
         })
         .catch((error) => {
           console.error(
-            `Error deleting product with ID ${product.id} from cart:`,
+            `Error deleting product with ID ${product.productId} from cart:`,
             error
           );
         });
     });
   
-    // Réinitialisez les produits sélectionnés
+    // Réinitialiser les produits sélectionnés après la suppression
     setSelectedProducts([]);
   };
   
-  
+
+  const handleDeleteClick = (productsToDelete) => {
+    setShowModal(true);
+    setProductsToDelete(productsToDelete);
+  };
   // #endregion
 
   // #region Gestion de la modale de confirmation
-  /**
-   * Confirme la suppression d'un produit.
-   */
   const confirmDelete = () => {
-    if (productToDelete) {
-      deleteProduct(productToDelete.id);
-    }
+    productsToDelete.forEach((product) => updateProductQuantity(product.productId, 0));
     setShowModal(false);
-    setProductToDelete(null);
+    setProductsToDelete([]);
   };
 
-  /**
-   * Annule la suppression d'un produit.
-   */
   const cancelDelete = () => {
     setShowModal(false);
-    setProductToDelete(null);
+    setProductsToDelete([]);
+  };
+  // #endregion
+
+  // #region Gestion de la sélection de produits
+  const toggleProductSelection = (productId) => {
+    setSelectedProducts((prevSelected) =>
+      prevSelected.includes(productId)
+        ? prevSelected.filter((id) => id !== productId)
+        : [...prevSelected, productId]
+    );
+  };
+
+  const selectAllProducts = () => {
+    setSelectedProducts(products.map((product) => product.productId));
+  };
+
+  const deselectAllProducts = () => {
+    setSelectedProducts([]);
+  };
+
+  const handleDeleteSelected = () => {
+    const productsToBeDeleted = products.filter((product) =>
+      selectedProducts.includes(product.productId)
+    );
+    handleDeleteClick(productsToBeDeleted);
   };
   // #endregion
 
   // #region Navigation et calculs
-  /**
-   * Navigue vers la page de résumé de commande.
-   */
   const handleNavigate = () => {
     navigate("/order-summary", { state: { products } });
   };
 
-  /**
-   * Calcule le sous-total du panier.
-   */
   const calculateSubtotal = () => {
     return products
       .reduce(
@@ -245,7 +217,7 @@ function Basketball() {
           show={showModal}
           onClose={cancelDelete}
           onConfirm={confirmDelete}
-          productName={productToDelete?.nom}
+          productName={productsToDelete.map((p) => p.nom).join(", ")}
         />
         <div className="basket-header">
           <h1 className="basket-title">Votre panier</h1>
@@ -297,23 +269,26 @@ function Basketball() {
                   </p>
                   <p className="basket-item-price">Prix: {product.prix} €</p>
                   <div className="quantity-control">
-                  <button
+                    <button
                       className="delete-item"
-                      onClick={() => {
-                        const targetProduct = products.find((p) => p.productId === product.productId);
-                        if (targetProduct) {
-                          updateProductQuantity(targetProduct.productId, 0);
-                        }
-                      }}
+                      onClick={() => handleDeleteClick([product])}
                     >
                       🗑️
                     </button>
                     <button
                       className="decrement"
                       onClick={() => {
-                        const targetProduct = products.find((p) => p.productId === product.productId);
+                        const targetProduct = products.find(
+                          (p) => p.productId === product.productId
+                        );
                         if (targetProduct) {
-                          updateProductQuantity(targetProduct.productId, targetProduct.quantity - 1);
+                          if (targetProduct.quantity === 1) {
+                            handleDeleteClick([product]);
+                          }
+                          else {updateProductQuantity(
+                            targetProduct.productId,
+                            targetProduct.quantity - 1
+                          );}
                         }
                       }}
                     >
@@ -323,15 +298,19 @@ function Basketball() {
                     <button
                       className="increment"
                       onClick={() => {
-                        const targetProduct = products.find((p) => p.productId === product.productId);
+                        const targetProduct = products.find(
+                          (p) => p.productId === product.productId
+                        );
                         if (targetProduct) {
-                          updateProductQuantity(targetProduct.productId, targetProduct.quantity + 1);
+                          updateProductQuantity(
+                            targetProduct.productId,
+                            targetProduct.quantity + 1
+                          );
                         }
                       }}
                     >
                       +
                     </button>
-
                   </div>
                 </div>
               </div>
@@ -356,7 +335,6 @@ function Basketball() {
       </div>
     </div>
   );
-  
 }
 
 export default Basketball;
