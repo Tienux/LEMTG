@@ -37,11 +37,11 @@
    ```bash
    $ cd cassandra-setup
    ```
-5. Lancez Cassandra :
+5. Lancez Cassandra et attendre que cassandra se lance :
    ```bash
    $ docker compose up -d
    ```
-6. Une fois cassandra opérationnel, il est possible de vérifier les données :
+6. Une fois cassandra opérationnel, il est possible de vérifier les données  (Optionnel):
    - Accédez au conteneur Cassandra :
      ```bash
      $ docker exec -it cassandra-container cqlsh
@@ -62,9 +62,9 @@
 ### **Cloner le projet**
 
 1. Clonez le projet depuis GitHub :
-   ```bash
-   $ git clone
-
+  ```bash
+  $ git clone
+  ```
 
 ### **Configuration du back-end**
 
