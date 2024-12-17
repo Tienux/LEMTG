@@ -110,7 +110,7 @@ const Product = () => {
    * Ajoute un produit au panier et affiche le popup de confirmation.
    */
   const addToBasket = (product) => {
-    // Récupérer le panier actuel
+    if(isAuthenticated) {
     axios
       .get(`http://localhost:3000/api/users/${user.id}/cart`, {
         headers: { Authorization: `Bearer ${user.token}` },
@@ -157,7 +157,7 @@ const Product = () => {
       })
       .catch((error) => {
         console.error("Erreur lors de la récupération du panier :", error);
-      });
+      });}
   };
   
   

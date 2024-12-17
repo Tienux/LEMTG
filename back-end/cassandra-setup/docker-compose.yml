@@ -22,8 +22,8 @@ services:
       - "6379:6379"  # Port standard pour Redis
     networks:
       - app_network
-    volumes:
-      - redis-data:/data  # Persiste les données Redis
+    # volumes:
+    #   - redis-data:/data  # Persiste les données Redis
     command: ["redis-server"]
 
 networks:

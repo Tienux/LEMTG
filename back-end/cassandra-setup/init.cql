@@ -24,6 +24,14 @@ CREATE TABLE IF NOT EXISTS users (
     password text
 );
 
+CREATE TABLE IF NOT EXISTS carts (
+    user_id text,
+    product_id text,
+    quantity int,
+    PRIMARY KEY (user_id, product_id)
+);
+
+
 -- Insertion de users avec mot de passe
 INSERT INTO users (id, name, password)
 VALUES ('1', 'Gabriel', '12345');
